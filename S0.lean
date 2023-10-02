@@ -1,9 +1,9 @@
--- Primera Sessió 25/09/23
+-- Sessió 0 - 25/09/23
 -- Primeres definicions i sintaxi de Lean4
 
 -- Observem que en el nostre espai de treball tenim dues finestres
 -- Una finestra farà d'editor de text i una altra farà d'intèrpret
--- Els fitxers .Lean s'obriran en l'editor i l'interpret executarà les línies de codi en situar el cursor a la dreta de les expressions que apareixen a l'editor
+-- Els fitxers .Lean s'obriran en l'editor i l'intèrpret executarà les línies de codi en situar el cursor a la dreta de les expressions que apareixen a l'editor
 
 -- En Lean tots els objectes amb els què treballem estaran tipificats
 -- L'expressió a:A es llig com a té tipus A
@@ -30,7 +30,7 @@
 
 -- Si volem definir un objecte concret d'un tipus utilitzarem expressions com 
 def x : Nat := 5
--- En aquest cas estem anomenant a l'objecte x, estem dient que té tipus Nat i que té el valor concret de 5
+-- En aquest cas estem definint a l'objecte que s'anomena x, estem dient que té tipus Nat i que té el valor concret de 5
 -- Si comprovem el seu tipus, ens diu que és un natural
 #check x  
 -- Si l'avaluem ens torna el valor que té assignat
@@ -43,7 +43,8 @@ variable (m n: Nat)
 #check m
 
 -- També podem crear espais de treball i dins d'aquests espais definir variables 
--- En aquest cas les variables només tindran interpretació dins de l'espai de treball
+-- Adona't que els espais de treball es poden col·lapsar per a millorar la presentació de l'editor
+-- Les variables que hi definim només tindran interpretació dins de l'espai de treball
 -- Creem un Espai de Treball anomenat EspaiTreball i dins creem una variable de tipus natural
 namespace EspaiTreball
 def r : Nat := 27
@@ -68,7 +69,7 @@ end EspaiTreball
 -- Els elements d'aquest nou tipus seran parells ordenats
 -- Per als guionets ⟨ (⟨) i ⟩ (⟩)  
 def p : Nat × Nat := ⟨2,3⟩  
--- Comprovem tipus i significat i construcció
+-- Comprovem tipus, significat i construcció
 #check p
 #eval p
 #print p
