@@ -90,6 +90,11 @@ theorem Teo3 (h : P) : P := by
 theorem Teo4 (h : P) : P := by
   exact (Teo2 P) h
 
+-- En els teoremes podem tindre objectius intermedis amb la comanda have
+theorem Teo5 (h : P) : P := by 
+  have h' : P := by exact h 
+  exact h'
+
 -- Els example funcionen com els teoremes, però no reben nom -i, per tant, no podrem cridar-los més endavant
 example (h : P) : P := by
   exact h
@@ -254,3 +259,43 @@ theorem T514 (A B: Prop) (h1: A ↔ B) : (A ∧ B) ∨ (¬A ∧ ¬B) := by
   sorry
 
 end Exercicis
+
+namespace Classical
+-- ////////////////////////////////////
+-- Si heu intentat resoldre els anteriors exercicis amb el que sabíeu, 
+-- segurament vos trobeu el problema d'intentar donar una solució per a 
+-- expressions del tipus P ∨ ¬ P o P ↔ (¬ (¬ P)). Açò és perquè 
+-- les regles d'introducció i eliminació anteriors són regles 
+-- constructives, mentre que les que anteriors són clàssiques o booleanes
+-- Per a poder-les emprar, cal importar la llibreria clàssica
+
+open Classical
+
+-- Terç Exclós
+-- Podeu emprar la comanda em (excludded middle) per a derivar P ∨ ¬ P 
+#check em
+
+theorem TE (P : Prop) : P ∨ ¬P := by 
+  exact em P
+
+-- Doble negació
+theorem DN (P : Prop) : ¬¬P → P := by 
+  intro h 
+  cases (em P) with 
+  | inl hP => exact hP
+  | inr hNP => exact False.elim (h hNP)
+
+-- Doble negació per reducció a l'absurd
+#check byContradiction 
+theorem DN2 (P : Prop) : ¬¬P → P := by 
+  intro h 
+  have hF : ¬ P → False := by
+    intro hNP 
+    exact h hNP 
+  apply byContradiction hF 
+
+-- Si voleu aprendre més sobre la diferència entre lògica clàssica 
+-- i lògica contructivista podeu llegir l'article 
+-- Five stages of accepting constructive mathematics, d'Andrej Bauer
+-- https://www.ams.org/journals/bull/2017-54-03/S0273-0979-2016-01556-4/S0273-0979-2016-01556-4.pdf
+end Classical
