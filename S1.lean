@@ -109,7 +109,7 @@ variable (P Q R: Prop)
 -- ////////////////////////////////////
 -- Introducció de la implicació 
 -- Si tenim la variable Q, podem concloure P→Q
-theorem T1 (h1 : Q) : P→Q := by
+theorem T1 (h1 : Q) : P → Q := by
 -- En aquest cas assumim la hipòtesi i de la implicació
   intro h2
 -- Demostrem Q 
@@ -147,7 +147,7 @@ theorem T7 (h : Q) : P∨Q := by
 -- Eliminació de la disjunció
 -- Si tenim com a hipòtesi P∨Q i que P→R i Q→R, podem concloure R 
 -- En aquest cas farem una demostració per casos
-theorem T8 (h1 : P∨Q) (h2: P→R) (h3: Q→R) : R := by
+theorem T8 (h1 : P∨Q) (h2: P → R) (h3: Q → R) : R := by
   cases h1 with 
   | inl hP => exact h2 hP
   | inr hQ => exact h3 hQ
@@ -169,15 +169,15 @@ theorem T10 (h1 : ¬P) (h2 : P) : False := by
 -- P↔Q és una abreviatura de (P→Q)∧(Q→P) , per tant s'introdueix i s'elimina com una conjunció
 -- Introducció de la doble implicació
 -- Si tenim com a hipòtesi P→Q i Q→P, podem concloure P↔Q
-theorem T11 (h1 : P→Q) (h2 : Q→P) : P↔Q := by
+theorem T11 (h1 : P→Q) (h2 : Q → P) : P ↔ Q := by
   exact Iff.intro h1 h2 
 
 -- Eliminació de la doble implicació
 -- Si tenim com a hipòtesi P↔Q, podem concloure P→Q (.mp Modus Ponens)
-theorem T12 (h : P↔Q) : P→Q := by
+theorem T12 (h : P ↔ Q) : P → Q := by
   exact h.mp
 -- Si tenim com a hipòtesi P↔Q, podem concloure Q→P (.mpr Modus Ponens reversed)
-theorem T13 (h : P↔Q) : Q→P := by
+theorem T13 (h : P ↔ Q) : Q → P := by
 exact h.mpr 
 
 -- ////////////////////////////////////
