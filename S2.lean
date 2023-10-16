@@ -64,7 +64,7 @@ theorem T2 (h1 : ∃(x:Ω), P x) (h2 : ∀ (x:Ω), P x → Q) : Q := by
 end Existeix
 
 namespace Exercicis
-open classical
+open Classical
 -- Ω és un tipus que farà de contenidor
 variable (Ω : Type)
 -- x, y i z seran variables de tipus Ω
