@@ -2,7 +2,10 @@
 -- Treballem amb igualtats i aplicacions
 
 -- L'objectiu d'aquesta sessió és introduïr les igualtats i les aplicacions entre tipus i treballarem amb algunes de les seues propietats bàsiques
--- Seguirem https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html
+-- Seguirem
+-- https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html
+
+import Paperproof
 
 namespace Igualtat
 -- En aquest espai treballarem amb la igualtat
@@ -18,15 +21,15 @@ variable (x y : Ω)
 #check rfl
 -- La igualtat és reflexiva
 theorem TEqRfl (a : Ω) : a=a := by
-  exact rfl 
+  exact rfl
 
 -- La igualtat és simètrica
-theorem TEqSymm (a b : Ω) (h : a=b) : (b=a) := by 
+theorem TEqSymm (a b : Ω) (h : a=b) : (b=a) := by
   exact Eq.symm h
 
 -- La igualtat és transitiva
-theorem TEqTrans (a b c : Ω) (h1 : a=b) (h2 : b=c) : a=c := by 
-  exact Eq.trans h1 h2 
+theorem TEqTrans (a b c : Ω) (h1 : a=b) (h2 : b=c) : a=c := by
+  exact Eq.trans h1 h2
 
 -- La igualtat serveix per a reescriure els objectius
 theorem TEqRw (a b : Ω) (h1 : a=b) (h2 : P b) : P a := by
@@ -45,11 +48,11 @@ theorem TEqRw3 (a b : Ω) (h1 : a=b) (h2 : P b) : P a := by
 
 -- Demostracions calculístiques
 theorem TCalc (a b c d : Ω) (h1 : a=b) (h2 : b=c) (h3: c=d) : (a=d) := by
-  calc 
+  calc
     a = b := by rw [h1]
     _ = c := by rw [h2]
     _ = d := by rw [h3]
- 
+
 end Igualtat
 
 namespace Aplicacions
@@ -63,7 +66,7 @@ variable (h : Y→Z)
 -- Considerem un element x : X
 variable (x: X)
 -- Aleshores f x : Y
-#check f x 
+#check f x
 
 -- Les aplicacions es poden composar amb ∘ (\circ)
 #check h∘f
@@ -73,10 +76,10 @@ theorem TEqApl : f = g ↔ ∀ (x : X), f x = g x := by
   apply Iff.intro
   -- Primera implicació
   intro h
-  intro z 
+  intro z
   exact congrFun h z
   -- Segona implicació
-  intro h 
+  intro h
   exact funext h
 
 end Aplicacions
@@ -84,8 +87,8 @@ end Aplicacions
 namespace PropApl
 -- Introduïm l'aplicació identitat
 def idt (X : Type) : X→X := by
-  intro x 
-  exact x 
+  intro x
+  exact x
 
 -- El següent teorema diu com funciona l'aplicació identitat
 theorem idteq {X : Type} (x : X) : idt X x = x := by exact rfl
@@ -94,17 +97,17 @@ namespace Inj
 -- En aquest espai definim  tres conceptes sobre una aplicació, el d'injectivitat, el de ser monomorfisme i el de tindre invers per l'esquerra
 
 -- Definició d'aplicació injectiva
-def injectiva {X Y : Type} (f : X→Y) : Prop := ∀(x y: X), f x = f y → x = y 
+def injectiva {X Y : Type} (f : X→Y) : Prop := ∀(x y: X), f x = f y → x = y
 
 -- Definició de monomorfisme
-def monomorfisme {X Y : Type} (f : X→Y) : Prop := ∀(Z : Type), ∀(g h : Z→X), f∘g=f∘h  → g=h    
+def monomorfisme {X Y : Type} (f : X→Y) : Prop := ∀(Z : Type), ∀(g h : Z→X), f∘g=f∘h  → g=h
 
 -- Definició d'inversa a esquerra
-def invesq {X Y : Type} (f : X→Y) : Prop := ∃(g : Y→X), g∘f = idt X 
+def invesq {X Y : Type} (f : X→Y) : Prop := ∃(g : Y→X), g∘f = idt X
 
 -- Teoremes
 -- La identitat és injectiva
-theorem TIdInj {X:Type} : injectiva (idt X) := by 
+theorem TIdInj {X:Type} : injectiva (idt X) := by
   rw [injectiva]
   intros x y h
   rw [idteq x, idteq y] at h
@@ -130,7 +133,7 @@ theorem TCarMonoInj {X Y : Type} (f: X→Y) : injectiva f ↔ monomorfisme f := 
 theorem TCarInvesqInj {X Y : Type} (f: X→Y) : injectiva f ↔ invesq f := by
   sorry
 
-end Inj 
+end Inj
 
 --------
 
@@ -141,17 +144,17 @@ namespace Sobre
 def sobrejectiva {X Y : Type} (f : X→Y) : Prop := ∀(y : Y), ∃(x : X), f x = y
 
 -- Definició d'epimorfisme
-def epimorfisme {X Y : Type} (f : X→Y) : Prop := ∀(Z : Type), ∀(g h : Y→Z), g∘f=h∘f  → g=h    
+def epimorfisme {X Y : Type} (f : X→Y) : Prop := ∀(Z : Type), ∀(g h : Y→Z), g∘f=h∘f  → g=h
 
 -- Definició d'inversa a dreta
-def invdret {X Y : Type} (f : X→Y) : Prop := ∃(g : Y→X), f∘g = idt Y 
+def invdret {X Y : Type} (f : X→Y) : Prop := ∃(g : Y→X), f∘g = idt Y
 
 -- Teoremes
 -- La identitat és sobrejectiva
-theorem TIdInj {X:Type} : sobrejectiva (idt X) := by 
+theorem TIdInj {X:Type} : sobrejectiva (idt X) := by
   rw [sobrejectiva]
-  intros x 
-  apply Exists.intro x 
+  intros x
+  apply Exists.intro x
   exact idteq x
 
 -- Negació de la sobrejectivitat
@@ -174,5 +177,5 @@ theorem TCarEpiSobre {X Y : Type} (f: X→Y) : sobrejectiva f ↔ epimorfisme f 
 theorem TImplInvDretSobre {X Y : Type} (f: X→Y) : invdret f → sobrejectiva f := by
   sorry
 
-end Sobre 
+end Sobre
 end PropApl

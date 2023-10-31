@@ -1,7 +1,11 @@
 -- Sessió 1 - 02/10/23
 -- Treballem amb Proposicions
 
--- L'objectiu d'aquesta sessió és introduïr el tipus de les proposicions, els connectors lògics i realitzar les primeres demostracions
+-- L'objectiu d'aquesta sessió és introduïr el tipus de les proposicions,
+-- els connectors lògics i realitzar les primeres demostracions
+
+import Paperproof
+
 -- Prop és el tipus de les proposicions
 #check Prop
 
@@ -16,33 +20,33 @@ variable (h : P)
 #check h
 end DefVar
 
-namespace DefCon 
+namespace DefCon
 -- En aquest espai introduïm les connectives proposicionals
 -- Definim variables P, Q de tipus Prop
 variable (P Q : Prop)
 
--- Conjunció ∧ (\and) 
+-- Conjunció ∧ (\and)
 -- Si P i Q són de tipus Prop, aleshores P∧Q també és de tipus Prop
-#check P∧Q  
+#check P∧Q
 
--- Disjunció ∨ (\or) 
+-- Disjunció ∨ (\or)
 -- Si P i Q són de tipus Prop, aleshores P∨Q també és de tipus Prop
 #check P∨Q
 
--- Negació ¬ (\not) 
+-- Negació ¬ (\not)
 -- Si P és de tipus Prop, aleshores ¬P també és de tipus Prop
 #check ¬P
 
--- Implicació → (\to) 
+-- Implicació → (\to)
 -- Si P i Q són de tipus Prop, aleshores P→Q també és de tipus Prop
 #check P→Q
 
--- Doble implicació ↔ (\iff) 
+-- Doble implicació ↔ (\iff)
 -- Si P i Q són de tipus Prop, aleshores P↔Q també és de tipus Prop
 #check P↔Q
 
 -- La veritat (True) té tipus Prop
-#check True 
+#check True
 -- No confondre amb true, que té tipus Bool
 #check true
 
@@ -63,7 +67,7 @@ variable (P Q : Prop)
 -- Si botem de línia i indentem podrem escriure sorry, que és una comanda per a finalitzar processos
 -- En posar-nos a la dreta de sorry ens apareixen les hipòtesis del teorema i el que ens cal demostrar
 -- En aquest cas tenim a P i Q assumides com a variables de tipus Prop, una hipòtesis de tipus P i el símbol ⊢ (\vdash) -de conseqüència sintàctica- acompanyat de P, la conclusió a la què volem arribar
-theorem Teo1 (h : P) : P := 
+theorem Teo1 (h : P) : P :=
   sorry
 
 -- Tornem a escriure el teorema -amb un nou nom- i el demostrem
@@ -78,7 +82,7 @@ theorem Teo2 (h : P) : P :=
 -- Adona't que, en aplicar-lo sobre P, el seu tipus és P→P
 #check Teo2 P
 -- En aplicar-lo sobre Q, el seu tipus canvia a Q→Q
-#check Teo2 Q 
+#check Teo2 Q
 
 
 -- Podem emprar diferent sintaxi per a la demostració del mateix Teorema
@@ -91,8 +95,8 @@ theorem Teo4 (h : P) : P := by
   exact (Teo2 P) h
 
 -- En els teoremes podem tindre objectius intermedis amb la comanda have
-theorem Teo5 (h : P) : P := by 
-  have h' : P := by exact h 
+theorem Teo5 (h : P) : P := by
+  have h' : P := by exact h
   exact h'
 
 -- Els example funcionen com els teoremes, però no reben nom -i, per tant, no podrem cridar-los més endavant
@@ -107,19 +111,19 @@ namespace InOut
 variable (P Q R: Prop)
 
 -- ////////////////////////////////////
--- Introducció de la implicació 
+-- Introducció de la implicació
 -- Si tenim la variable Q, podem concloure P→Q
 theorem T1 (h1 : Q) : P → Q := by
 -- En aquest cas assumim la hipòtesi i de la implicació
   intro h2
--- Demostrem Q 
+-- Demostrem Q
   exact h1
 
 -- Eliminació de la implicació (Modus Ponens)
 -- Si tenim com a hipòtesi P→Q i P, podem concloure Q
 -- Simplement tractem P→Q com si fora una aplicació i la fem actuar sobre P
 theorem T2 (h1 : P → Q) (h2 : P) : Q := by
-  exact h1 h2 
+  exact h1 h2
 
 -- ////////////////////////////////////
 -- Introducció de la conjunció
@@ -145,19 +149,19 @@ theorem T7 (h : Q) : P∨Q := by
   exact Or.inr h
 
 -- Eliminació de la disjunció
--- Si tenim com a hipòtesi P∨Q i que P→R i Q→R, podem concloure R 
+-- Si tenim com a hipòtesi P∨Q i que P→R i Q→R, podem concloure R
 -- En aquest cas farem una demostració per casos
 theorem T8 (h1 : P∨Q) (h2: P → R) (h3: Q → R) : R := by
-  cases h1 with 
+  cases h1 with
   | inl hP => exact h2 hP
   | inr hQ => exact h3 hQ
 
 -- ////////////////////////////////////
 -- ¬P és una abreviatura de P→False, per tant s'introdueix i s'elimina com una implicació
 -- Introducció de la negació
--- Si tenim com a hipòtesi False, aleshores podem concloure ¬P   
-theorem T9 (h1 : False) : ¬P := by 
-  intro h2 
+-- Si tenim com a hipòtesi False, aleshores podem concloure ¬P
+theorem T9 (h1 : False) : ¬P := by
+  intro h2
   exact h1
 
 -- Eliminació de la negació
@@ -170,7 +174,7 @@ theorem T10 (h1 : ¬P) (h2 : P) : False := by
 -- Introducció de la doble implicació
 -- Si tenim com a hipòtesi P→Q i Q→P, podem concloure P↔Q
 theorem T11 (h1 : P→Q) (h2 : Q → P) : P ↔ Q := by
-  exact Iff.intro h1 h2 
+  exact Iff.intro h1 h2
 
 -- Eliminació de la doble implicació
 -- Si tenim com a hipòtesi P↔Q, podem concloure P→Q (.mp Modus Ponens)
@@ -178,7 +182,7 @@ theorem T12 (h : P ↔ Q) : P → Q := by
   exact h.mp
 -- Si tenim com a hipòtesi P↔Q, podem concloure Q→P (.mpr Modus Ponens reversed)
 theorem T13 (h : P ↔ Q) : Q → P := by
-exact h.mpr 
+exact h.mpr
 
 -- ////////////////////////////////////
 -- La Veritat
@@ -195,7 +199,7 @@ theorem T15 (h:False) : P := by
 end InOut
 
 namespace Exercicis
--- Exercicis de Daniel Clemente 
+-- Exercicis de Daniel Clemente
 -- https://www.danielclemente.com/
 -- CA https://www.danielclemente.com/logica/dn.ca.pdf
 -- ES https://www.danielclemente.com/logica/dn.pdf
@@ -262,40 +266,40 @@ end Exercicis
 
 namespace Classical
 -- ////////////////////////////////////
--- Si heu intentat resoldre els anteriors exercicis amb el que sabíeu, 
--- segurament vos trobeu el problema d'intentar donar una solució per a 
--- expressions del tipus P ∨ ¬ P o P ↔ (¬ (¬ P)). Açò és perquè 
--- les regles d'introducció i eliminació anteriors són regles 
+-- Si heu intentat resoldre els anteriors exercicis amb el que sabíeu,
+-- segurament vos trobeu el problema d'intentar donar una solució per a
+-- expressions del tipus P ∨ ¬ P o P ↔ (¬ (¬ P)). Açò és perquè
+-- les regles d'introducció i eliminació anteriors són regles
 -- constructives, mentre que les que anteriors són clàssiques o booleanes
 -- Per a poder-les emprar, cal importar la llibreria clàssica
 
 open Classical
 
 -- Terç Exclós
--- Podeu emprar la comanda em (excludded middle) per a derivar P ∨ ¬ P 
+-- Podeu emprar la comanda em (excludded middle) per a derivar P ∨ ¬ P
 #check em
 
-theorem TE (P : Prop) : P ∨ ¬P := by 
+theorem TE (P : Prop) : P ∨ ¬P := by
   exact em P
 
 -- Doble negació
-theorem DN (P : Prop) : ¬¬P → P := by 
-  intro h 
-  cases (em P) with 
+theorem DN (P : Prop) : ¬¬P → P := by
+  intro h
+  cases (em P) with
   | inl hP => exact hP
   | inr hNP => exact False.elim (h hNP)
 
 -- Doble negació per reducció a l'absurd
-#check byContradiction 
-theorem DN2 (P : Prop) : ¬¬P → P := by 
-  intro h 
+#check byContradiction
+theorem DN2 (P : Prop) : ¬¬P → P := by
+  intro h
   have hF : ¬ P → False := by
-    intro hNP 
-    exact h hNP 
-  apply byContradiction hF 
+    intro hNP
+    exact h hNP
+  apply byContradiction hF
 
--- Si voleu aprendre més sobre la diferència entre lògica clàssica 
--- i lògica contructivista podeu llegir l'article 
+-- Si voleu aprendre més sobre la diferència entre lògica clàssica
+-- i lògica contructivista podeu llegir l'article
 -- Five stages of accepting constructive mathematics, d'Andrej Bauer
 -- https://www.ams.org/journals/bull/2017-54-03/S0273-0979-2016-01556-4/S0273-0979-2016-01556-4.pdf
 end Classical
