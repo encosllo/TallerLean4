@@ -5,17 +5,36 @@ Matemàtiques de la Universitat de València.
 
 ## Com treballar amb aquest repositori
 
-### Entorn de Lean i altres requeriments
+Per a treballar amb aquest repositori recomanem utilitzar l'editor
+[Visual Studio Code](https://code.visualstudio.com) amb les extensions
+recomanades per a Lean 4:
+- [lean4](https://marketplace.visualstudio.com/items?itemName=leanprover.lean4)
+- [Paperproof](https://marketplace.visualstudio.com/items?itemName=paperproof.paperproof)
 
-Per tal d'activar l'entorn de treball, només cal executar el següent
-comandament:
+Aquestes i altres extensions estan incloses en el fitxer de recomanacions
+d'extensions de Visual Studio Code que es pot trobar a la carpeta
+`.vscode` d'aquest repositori.
 
-```bash
-lake update
-```
+La instal·lació de Lean 4 es pot fer automaticament amb la propia extensió
+de Lean 4, però també es pot fer manualment seguint les instruccions de la
+[web de Lean 4](https://leanprover.github.io/lean4/doc/setup.html).
 
 Podeu trobar altres requirements i detalls al [blog del Taller de Lean
 4](https://www.uv.es/coslloen/Lean4.html).
+
+### Entorn de Lean i altres requeriments
+
+Per tal d'activar l'entorn de treball, només cal executar el següent
+en la terminal:
+
+```bash
+lake update # <- Per baixar i actualitzar les dependències
+lake build # <- Per compilar el nostre i codi i poder accedir a ell
+```
+
+Si treballeu amb Visual Studio Code, és possible que aparega un _pop-up_
+que indica que és necessari fer un _rebuild_ de les dependències. Feu click
+al botó de _Rebuild_ per a fer-ho.
 
 ### Workflow
 
@@ -34,8 +53,12 @@ git branch <nom> # <- Crear la branca
 git switch <nom> # <- Canviar a la branca
 ```
 
-Ara ja podeu treballar a la branca local i fer els vostres commits.
-Quan comencem una nova sessió, actualitzarem el repositori fent un rebase:
+Ara ja podeu treballar a la branca local i fer els vostres commits,
+preferiblement en fitxers diferents als que ja estan en el repositori per
+tal de no tindre conflictes amb actualitzacions futures.
+
+Quan vulgueu actualitzar el vostre repositori amb les actualitzacions
+del repositori remot, podeu fer un _rebase_ de la branca remota `main`:
 
 ```bash
 git rebase origin/main
