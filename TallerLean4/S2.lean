@@ -1,11 +1,14 @@
 -- Sessió 2 - 16/10/23
 -- Treballem amb quantificadors
 
--- L'objectiu d'aquesta sessió és introduïr els quantificadors 
+-- L'objectiu d'aquesta sessió és introduïr els quantificadors
 -- universal i existencial i treballar amb ells
--- Seguirem https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html
+-- Seguirem
+-- https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html
 
-namespace Peratot 
+import Paperproof
+
+namespace Peratot
 -- En aquest espai introduïm el quantificador universal
 -- Vorem com introduïr-lo i eliminar-lo
 -- Ω (\Omega) és un tipus que farà de contenidor
@@ -19,7 +22,7 @@ variable (P : Ω → Prop)
 
 -- ////////////////////////////////////
 -- Introducció del quantificador universal
--- Per a introduïr un quantificador universal introduïm una variable x del 
+-- Per a introduïr un quantificador universal introduïm una variable x del
 -- tipus sobre el què quantifiquem i provem de demostrar que P x és cert
 theorem T1 : ∀ (x:Ω), P x := by
   intro x
@@ -30,11 +33,11 @@ theorem T1 : ∀ (x:Ω), P x := by
 -- Per a eliminar un quantificador universal simplement l'apliquem
 -- sobre una variable del tipus sobre el què quantifiquem
 theorem T2 (h : ∀(x:Ω), P x) (y : Ω) : P y := by
-  exact h y 
+  exact h y
 
 end Peratot
 
-namespace Existeix 
+namespace Existeix
 -- En aquest espai introduïm el quantificador existencial
 -- Vorem com introduïr-lo i eliminar-lo
 -- Ω (\Omega) és un tipus que farà de contenidor
@@ -52,14 +55,14 @@ variable (Q : Prop)
 -- Introducció del quantificador existencial
 -- Per a introduïr un quantificador existencial cal demostrar que algun P x és cert
 theorem T1  (y : Ω) (h: P y) : ∃ (x:Ω), P x := by
-  exact Exists.intro y h 
+  exact Exists.intro y h
 
 -- ////////////////////////////////////
 -- Eliminació del quantificador existencial
--- Per a eliminar un quantificador existencial simplement 
+-- Per a eliminar un quantificador existencial simplement
 theorem T2 (h1 : ∃(x:Ω), P x) (h2 : ∀ (x:Ω), P x → Q) : Q := by
   apply Exists.elim h1
-  exact h2 
+  exact h2
 
 end Existeix
 
@@ -74,13 +77,13 @@ variable (P Q : Ω → Prop)
 -- R serà una proposició
 variable (R : Prop)
 
--- Les següents proposicions venen de 
+-- Les següents proposicions venen de
 -- https://github.com/leanprover/tutorial/blob/master/04_Quantifiers_and_Equality.org
 
 theorem E1 : (∃ (x : Ω), R) → R :=  by
   sorry
 
-theorem E2 (x : Ω) : R → (∃ (x : Ω), R) := by 
+theorem E2 (x : Ω) : R → (∃ (x : Ω), R) := by
   sorry
 
 theorem E3 : (∃ (x : Ω), P x ∧ R) ↔ (∃ (x : Ω), P x) ∧ R := by

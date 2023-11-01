@@ -55,7 +55,7 @@ def r : Nat := 27
 end EspaiTreball
 
 -- Però en eixir de l'espai de treball, el sistema deixa de reconèixer la variable r
-#check r 
+#check r
 #eval r
 #print r
 -- Per a recuperar la variable r haurem d'escriure prèviament l'espai de Treball on està definida
