@@ -2,10 +2,7 @@
 -- Treballem amb igualtats i aplicacions
 
 -- L'objectiu d'aquesta sessió és introduïr les igualtats i les aplicacions entre tipus i treballarem amb algunes de les seues propietats bàsiques
--- Seguirem
--- https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html
-
-import Paperproof
+-- Seguirem https://lean-lang.org/theorem_proving_in_lean4/quantifiers_and_equality.html
 
 namespace Igualtat
 -- En aquest espai treballarem amb la igualtat
@@ -166,7 +163,7 @@ theorem TCompSobre {X Y Z: Type} (f: X→Y) (g: Y→Z) (h1: sobrejectiva f) (h2:
   sorry
 
 -- Si la composició (g∘f) és sobrejectiva, aleshores g és sobrejectiva
-theorem TCompDSobre {X Y Z: Type} (f: X→Y) (g: Y→Z) (h1: sobrejectiva (g∘f)) : (sobrejectiva f) := by
+theorem TCompDSobre {X Y Z: Type} (f: X→Y) (g: Y→Z) (h1: sobrejectiva (g∘f)) : (sobrejectiva g) := by
   sorry
 
 -- Ser sobrejectiva és equivalent a ser epimorfisme
