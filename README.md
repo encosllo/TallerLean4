@@ -24,7 +24,7 @@ Podeu trobar altres requirements i detalls al [blog del Taller de Lean
 
 ### Entorn de Lean i altres requeriments
 
-Per tal d'activar l'entorn de treball, només cal executar el següent
+Per tal d'activar l'entorn de treball, només cal executar la següent comanda
 en la terminal:
 
 ```bash
@@ -36,7 +36,7 @@ Si treballeu amb Visual Studio Code, és possible que aparega un _pop-up_
 que indica que és necessari fer un _rebuild_ de les dependències. Feu click
 al botó de _Rebuild_ per a fer-ho.
 
-### Workflow
+### Flux de treball
 
 Una idea per a treballar a les sessions amb el codi actualitzat del
 repositori és, en primer lloc, clonar el repositori:
@@ -63,3 +63,17 @@ del repositori remot, podeu fer un _rebase_ de la branca remota `main`:
 ```bash
 git rebase origin/main
 ```
+
+### Inicialització
+
+Clonem el repositori
+```bash
+git clone https://github.com/encosllo/TallerLean4
+```
+
+A continuació actualitzem el sistema
+```bash
+lake exe cache get
+```
+
+Recordeu obrir la carpeta on esteu treballant al Visual Studio Code.

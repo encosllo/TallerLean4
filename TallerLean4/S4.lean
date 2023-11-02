@@ -4,6 +4,7 @@
 
 import Paperproof
 import Mathlib.data.setoid.basic
+import TallerLean4.S3
 
 namespace Subtipus
 -- Ω (\Omega) és un tipus que farà de contenidor
@@ -302,23 +303,25 @@ end Quocient
 namespace Exercicis
 -- Recordem les següents definicions
 -- Definició de l'aplicació identitat
-def idt (X : Type) : X → X := by
-  intro x
-  exact x
+
+-- Definició d'aplicació identiat
+#check PropApl.idt
+#print PropApl.idt
 
 -- Definició d'aplicació injectiva
-def injectiva {X Y : Type} (f : X → Y) : Prop := ∀(x y: X), f x = f y → x = y
-
+#check PropApl.Inj.injectiva
+#print PropApl.Inj.injectiva
 -- Definició d'aplicació sobrejectiva
-def sobrejectiva {X Y : Type} (f : X → Y) : Prop := ∀(y : Y), ∃(x : X), f x = y
+#check PropApl.Sobre.sobrejectiva
+#print PropApl.Sobre.sobrejectiva
 
 -- Definició d'aplicació bijectiva
-def bijectiva {X Y : Type} (f : X → Y) : Prop := injectiva f ∧ sobrejectiva f
+def bijectiva {X Y : Type} (f : X → Y) : Prop := PropApl.Inj.injectiva f ∧ PropApl.Sobre.sobrejectiva f
 
 -- Exercicis de Subtipus
 -- L'aplicació inclusió és injectiva
 #check Subtipus.inc
-theorem TincInj {Ω : Type} (P : Ω → Prop) : injectiva (Subtipus.inc P) := by
+theorem TincInj {Ω : Type} (P : Ω → Prop) : PropApl.Inj.injectiva  (Subtipus.inc P) := by
   sorry
 
 -- Defineix la imatge epimorfica d'una aplicació
@@ -326,13 +329,13 @@ def Depi {Δ Ω : Type} (f: Δ → Ω) : Δ → Subtipus.Im f := by
   sorry
 
 -- La imatge epimorfica d'una aplicació a la seua imatge és sobrejectiva
-theorem TDEpiSobre {Δ Ω : Type} (f: Δ → Ω) : sobrejectiva (Depi f) := by
+theorem TDEpiSobre {Δ Ω : Type} (f: Δ → Ω) : PropApl.Sobre.sobrejectiva (Depi f) := by
   sorry
 
 -- Exercicis de Tipus Quocients
 -- L'aplicació projecció és sobrejectiva
 #check Quocient.pr
-theorem TprSobre {Ω : Type} (s : Setoid Ω) : sobrejectiva (Quocient.pr s) := by
+theorem TprSobre {Ω : Type} (s : Setoid Ω) : PropApl.Sobre.sobrejectiva (Quocient.pr s) := by
   sorry
 
 -- Defineix la imatge monomorfica d'una aplicació
@@ -340,7 +343,7 @@ def Dmono {Γ Ω : Type} (f: Ω → Γ) : Quocient.QKer f → Γ := by
   sorry
 
 -- La imatge monomorfica d'una aplicació és injectiva
-theorem TDmonoInj {Δ Ω : Type} (f: Δ → Ω) : injectiva (Dmono f) := by
+theorem TDmonoInj {Δ Ω : Type} (f: Δ → Ω) : PropApl.Inj.injectiva (Dmono f) := by
   sorry
 
 -- Primer teorema d'isomorfisme
