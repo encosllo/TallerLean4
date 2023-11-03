@@ -25,13 +25,13 @@ theorem TProdMk {X Y : Type} (x : X) (y : Y) : X×Y := by
   exact Prod.mk x y
 
 -- Donat un element del producte podem considerar
--- la projecció a la primera component
+-- la projecció (π \pi) a la primera component
 def π1 {X Y : Type} : X×Y → X := by
   intro p
   exact p.1
 
 -- Donat un element del producte podem considerar
--- la projecció a la segona component
+-- la projecció (π \pi) a la segona component
 def π2 {X Y : Type} : X×Y → Y := by
   intro p
   exact p.2
@@ -106,13 +106,13 @@ variable (X Y : Type)
 #check Sum X Y
 
 -- Donat un element d'x, podem considerar
--- la inclusió a la primera component
+-- la inclusió (ι \iota) a la primera component
 #check Sum.inl
 def ι1 {X Y : Type} (x : X) : X⊕Y := by
   exact Sum.inl x
 
 -- Donat un element d'y, podem considerar
--- la inclusió a la segona component
+-- la inclusió (ι \iota) a la segona component
 #check Sum.inr
 def ι2 {X Y : Type} (y : Y) : X⊕Y := by
   exact Sum.inr y
@@ -159,3 +159,69 @@ theorem TUCoProdUniq {X Y Z : Type} (f : X → Z) (g : Y → Z) (h : X⊕Y → Z
   | inr y => exact h4 y
 
 end coproducte
+
+namespace exercicis
+-- En aquesta secció generalitzarem les anteriors construccions
+-- a una família de tipus
+-- Definim un tipus que farà d'índex
+variable (I : Type)
+-- Llavors una família de tipus indexada per I és una variable
+-- del següent tipus (𝕏 \bbX)
+variable (𝕏 : I → Type)
+
+namespace producte
+-- El producte de la família 𝕏 es denota com ∀(i:I), 𝕏 i
+#check ∀(i:I), 𝕏 i
+
+-- Donat un element del producte podem considerar
+-- la projecció a la component i-èssima
+def π {I : Type} {𝕏 : I → Type} (i : I) : (∀(i:I), 𝕏 i) → 𝕏 i := by
+  sorry
+
+-- Dos elements del producte són iguals si, i només si,
+-- tenen les mateixes components
+theorem PProdEqG {I : Type} {𝕏 : I → Type} (p1 p2 : ∀(i:I), 𝕏 i) : p1=p2 ↔ ∀(i:I), (π i p1 = π i p2) := by
+  sorry
+
+-- Propietat Universal del producte
+-- Donat qualsevol altre tipus Z i famílies d'aplicacions
+-- (fi : Z → 𝕏 i) (𝕗 \bbf) podem definir l'aplicació
+-- ⟨fi⟩ : Z → ∀(i:I), 𝕏 i
+def PUProdG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), Z → 𝕏 i ) : Z → (∀(i:I), 𝕏 i) := by
+  sorry
+
+-- L'aplicació ⟨fi⟩ satisfà que (πi)∘⟨fi⟩ = fi, per a tot i : I
+theorem TUProdG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), Z → 𝕏 i ) (i : I) : (π i)∘(PUProdG 𝕗) = 𝕗 i := by
+  sorry
+
+-- L'aplicació ⟨fi⟩ és l'única que satisfà les condicions anteriors per a tot i : I
+theorem TUProdUniqG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), Z → 𝕏 i ) (h : Z → (∀(i:I), 𝕏 i)) (hi : ∀(i:I) , (π i)∘h = 𝕗 i) : h = PUProdG 𝕗 := by
+  sorry
+
+end producte
+
+namespace coproducte
+-- El coproducte de la família 𝕏 es denota com Σ(i:I), 𝕏 i (Σ \Sigma)
+#check Σ(i:I), 𝕏 i
+
+-- Donat un element de 𝕏 i podem considerar
+-- la inclusió a la component i-èssima
+def ι {I : Type} {𝕏 : I → Type} (i : I) : 𝕏 i → (Σ(i:I), 𝕏 i) := by
+  sorry
+
+-- Propietat Universal del coproducte
+-- Donat qualsevol altre tipus Z i famílies d'aplicacions
+-- (fi : 𝕏 i → Z) (𝕗 \bbf) podem definir l'aplicació
+-- [fi] : (Σ(i:I), 𝕏 i) → Z
+def PUCoProdG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), 𝕏 i → Z) : (Σ(i:I), 𝕏 i) → Z := by
+  sorry
+
+-- L'aplicació [fi] satisfà que [fi]∘(ιi) = fi, per a tot i : I
+theorem TUProdG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), 𝕏 i → Z) (i : I) : (PUCoProdG 𝕗)∘(ι i) = 𝕗 i := by
+  sorry
+
+-- L'aplicació [fi] és l'única que satisfà les condicions anteriors per a tot i : I
+theorem TUCoProdUniqG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), 𝕏 i → Z) (h : (Σ(i:I), 𝕏 i) → Z) (hi : ∀(i:I), h∘(ι i) = 𝕗 i) : h = PUCoProdG 𝕗 := by
+  sorry
+end coproducte
+end exercicis
