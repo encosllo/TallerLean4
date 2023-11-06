@@ -126,13 +126,13 @@ def PUCoProd {X Y Z : Type} (f : X → Z) (g : Y → Z) : X⊕Y → Z := by
   | inl x => exact (f x)
   | inr y => exact (g y)
 
--- L'aplicació [f,g] satisfà que [f,g]∘ι1 =f
+-- L'aplicació [f,g] satisfà que [f,g]∘ι1 = f
 theorem TUCoProd1 {X Y Z : Type} (f : X → Z) (g : Y → Z) : (PUCoProd f g)∘ι1 = f := by
   apply funext
   intro x
   exact rfl
 
--- L'aplicació [f,g] satisfà que [f,g]∘ι2 =f
+-- L'aplicació [f,g] satisfà que [f,g]∘ι2 = g
 theorem TUCoProd2 {X Y Z : Type} (f : X → Z) (g : Y → Z) : (PUCoProd f g)∘ι2 = g := by
   apply funext
   intro y
