@@ -300,7 +300,7 @@ theorem TUQuotUni {Ω Γ : Type} {s : Setoid Ω} (f : Ω → Γ) (g : Quotient s
 
 end Quocient
 
-namespace Exercicis
+namespace ExS4
 -- Recordem les següents definicions
 -- Definició de l'aplicació identitat
 
@@ -317,6 +317,16 @@ namespace Exercicis
 
 -- Definició d'aplicació bijectiva
 def bijectiva {X Y : Type} (f : X → Y) : Prop := PropApl.Inj.injectiva f ∧ PropApl.Sobre.sobrejectiva f
+
+-- Definició de bijecció entre tipus
+def Bijectius : Type → Type →  Prop := by
+  intros X Y
+  exact ∃ f : X → Y, bijectiva f
+
+-- Ser bijectius és una relació d'equivalència sobre els tipus
+-- Afegeiu tots els lemes previs que necessiteu
+theorem TEqBij : Equivalence Bijectius := by
+  sorry
 
 -- Exercicis de Subtipus
 -- L'aplicació inclusió és injectiva
@@ -355,4 +365,4 @@ def DBij {A B : Type} (f : A → B) : Quocient.QKer f → Subtipus.Im f := by
 theorem TDBij {A B : Type} (f : A → B) : bijectiva (DBij f) := by
   sorry
 
-end Exercicis
+end ExS4

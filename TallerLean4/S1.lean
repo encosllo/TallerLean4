@@ -198,7 +198,7 @@ theorem T15 (h:False) : P := by
 
 end InOut
 
-namespace Exercicis
+namespace ExS1
 -- Exercicis de Daniel Clemente
 -- https://www.danielclemente.com/
 -- CA https://www.danielclemente.com/logica/dn.ca.pdf
@@ -262,7 +262,7 @@ theorem T513 (A B C D : Prop) (h1: A ∨ B) (h2: A → C) (h3: ¬D → ¬B) : C 
 theorem T514 (A B: Prop) (h1: A ↔ B) : (A ∧ B) ∨ (¬A ∧ ¬B) := by
   sorry
 
-end Exercicis
+end ExS1
 
 namespace Classical
 -- ////////////////////////////////////

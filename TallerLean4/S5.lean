@@ -160,7 +160,7 @@ theorem TUCoProdUniq {X Y Z : Type} (f : X → Z) (g : Y → Z) (h : X⊕Y → Z
 
 end coproducte
 
-namespace exercicis
+namespace ExS5
 -- En aquesta secció generalitzarem les anteriors construccions
 -- a una família de tipus
 -- Definim un tipus que farà d'índex
@@ -224,4 +224,53 @@ theorem TUProdG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), 𝕏 i → Z)
 theorem TUCoProdUniqG {I Z : Type} {𝕏 : I → Type} (𝕗 : ∀(i:I), 𝕏 i → Z) (h : (Σ(i:I), 𝕏 i) → Z) (hi : ∀(i:I), h∘(ι i) = 𝕗 i) : h = PUCoProdG 𝕗 := by
   sorry
 end coproducte
-end exercicis
+
+namespace lleis
+-- Les següents lleis que comprovarem no ens donen estrictament
+-- igualtats entre tipus, però sí tipus bijectius
+-- Recordem la definició de la relació de ser bijectius
+#check ExS4.Bijectius
+#print ExS4.Bijectius
+
+-- El producte commuta
+theorem TProdAb {X Y : Type} : ExS4.Bijectius (X×Y) (Y×X) := by
+  sorry
+
+-- El producte és associatiu
+theorem TProdAss {X Y Z : Type} : ExS4.Bijectius (X×(Y×Z)) ((X×Y)×Z) := by
+  sorry
+
+-- El producte té al tipus Unit com a unitat per l'esquerra
+theorem TProdUnitL {X : Type} : ExS4.Bijectius (X×Unit) (X) := by
+  sorry
+
+-- El producte té al tipus Unit com a unitat per la dreta
+theorem TProdUnitR {X : Type} : ExS4.Bijectius (Unit×X) (X) := by
+  sorry
+
+-- El coproducte commuta
+theorem TCoProdAb {X Y : Type} : ExS4.Bijectius (X⊕Y) (Y⊕X) := by
+  sorry
+
+-- El coproducte és associatiu
+theorem TCoProdAss {X Y Z : Type} : ExS4.Bijectius (X⊕(Y⊕Z)) ((X⊕Y)⊕Z) := by
+  sorry
+
+-- El coproducte té al tipus Empty com a unitat per l'esquerra
+theorem TCoProdEmptyL {X : Type} : ExS4.Bijectius (X⊕Empty) (X) := by
+  sorry
+
+-- El producte té al tipus Unit com a unitat per la dreta
+theorem TCoProdEmptyR {X : Type} : ExS4.Bijectius (Empty⊕X) (X) := by
+  sorry
+
+-- El producte distribueix per l'esquerra sobre el coproducte
+theorem TDisL {X Y Z : Type} : ExS4.Bijectius (X×(Y⊕Z)) ((X×Y)⊕(X×Z)) := by
+  sorry
+
+-- El producte distribueix per la dreta sobre el coproducte
+theorem TDisR {X Y Z : Type} : ExS4.Bijectius ((X⊕Y)×Z) ((X×Z)⊕(Y×Z)) := by
+  sorry
+
+end lleis
+end ExS5

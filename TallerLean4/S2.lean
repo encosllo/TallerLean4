@@ -66,7 +66,7 @@ theorem T2 (h1 : ∃(x:Ω), P x) (h2 : ∀ (x:Ω), P x → Q) : Q := by
 
 end Existeix
 
-namespace Exercicis
+namespace ExS2
 open Classical
 -- Ω és un tipus que farà de contenidor
 variable (Ω : Type)
@@ -113,4 +113,4 @@ theorem E10 (x : Ω) : (∃ (x : Ω), P x → R) ↔ (∀ (x : Ω), P x) → R :
 theorem E11 (x : Ω) : (∃ (x : Ω), R  →  P x) ↔ (R → ∃ (x : Ω), P x) := by
   sorry
 
-end Exercicis
+end ExS2
