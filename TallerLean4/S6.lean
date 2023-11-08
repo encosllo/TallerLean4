@@ -139,13 +139,13 @@ def suma : N → N → N := by
   | s n => exact s (suma n m)
 
 -- La suma també es pot definir per recursió sobre m (recursió a dreta)
-def sumar : N → N → N := by
-  intro n m
-  cases m with
-  | z   => exact n
-  | s m => exact s (suma n m)
+def sumar : N → N → N
+  | n, z => n
+  | n, s m => s (sumar n m)
 
-
+-- Demostreu que les aplicacions coincideixen (Doble inducció)
+theorem TSumar : ∀(n m : N), suma n m = sumar n m := by
+  sorry
 
 -- Ara podem demostrar propietats bàsiques sobre la suma
 -- 0 és neutre per l'esquerra per a la suma
@@ -186,13 +186,17 @@ theorem TSumaComm : ∀(n m : N), suma n m = suma m n := by
   ---------------
   -- Pas inductiu
   have hInd (n m : N) (hi : suma n m = suma m n) : suma (s n) m = suma m (s n) := by
-    have h1 : suma (s n) m = s (suma n m) := by exact rfl
-    have h2 : s (suma n m) = suma n (s m) := by sorry
-    sorry
+    calc
+      suma (s n) m  = s (suma n m)  := by exact rfl
+      _             = s (suma m n)  := by exact congrArg s hi
+      _             = s (sumar m n) := by exact congrArg s (TSumar m n)
+      _             = sumar m (s n) := by exact rfl
+      _             = suma m (s n)  := by exact (TSumar m (s n)).symm
   -- Demostració per inducció
   intro n m
   induction n with
   | z => exact hCB m
   | s n hi => exact hInd n m hi
+
 
 end Suma
