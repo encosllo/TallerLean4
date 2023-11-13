@@ -38,8 +38,8 @@ def uno  : N := s zero
 def dos  : N := s uno
 -- ...
 
--- Notem que el tipus N ens dona una álgebra de Dedekind-Peano
--- Podem pensar en aquesta estructura com l'álgebra lliure corresponent
+-- Notem que el tipus N ens dona una àlgebra de Dedekind-Peano
+-- Podem pensar en aquesta estructura com l'àlgebra lliure corresponent
 -- a considerar una constant (z) i una operació binària (s)
 -- D'aquesta forma, z mai podrà ser de la forma s n per a cap n de tipus N
 theorem NInj : ∀ (n : N), z ≠ s n := by
@@ -115,7 +115,7 @@ theorem EqzeroB : ∀(n:N), (Eqzero n = true) ↔ (n = z) := by
   | z => exact hCB
   | s n hi => exact hInd n hi
 
--- Notem que en el pas anterior no hem fet ús de la hipòtesi inductive
+-- Notem que en el pas anterior no hem fet ús de la hipòtesi inductiva
 -- Això vol dir que en comptes de fer una demostració per inducció
 -- Podríem simplement haver fet una demostració per casos
 -- Tornem a plantejar el mateix resultat que abans i demostrem-lo per casos
@@ -142,7 +142,7 @@ theorem EqzeroC : ∀(n:N), (Eqzero n = true) ↔ (n = z) := by
     intro h1
     rw [h1]
     exact rfl
-  -- Demostració per inducció
+  -- Demostració per casos
   intro n
   cases n with
   | z => exact hCB
@@ -171,9 +171,7 @@ theorem TRussell : uno + uno = dos := by
 -- Sense inducció
 theorem TSuma0NE : ∀(n:N), z + n = n := by
   intro n
-  cases n with
-  | z => exact rfl
-  | s n => exact rfl
+  exact rfl
 
 -- 0 és neutre per la dreta per a la suma
 -- Amb inducció
