@@ -1,67 +1,116 @@
 -- Sessió 7 - 20/11/23
--- Definim structures i classes
+-- Definim l'ordre sobre els naturals
 
 import TallerLean4.S6
-import Mathlib.Tactic.LibrarySearch
 
--- En aquesta sessió anem a implementar classes i estructures
--- Seguirem https://lean-lang.org/theorem_proving_in_lean4/type_classes.html
+-- Recordem que un ordre és una relació reflexiva,
+-- antisimètrica i transitiva
+def reflexiva {X : Type} (R : X → X → Prop) : Prop :=
+  ∀ (x : X), R x x
 
--- Definim una estructura que dependrà d'un tipus α
--- i contindrà tipus amb operacions binàries
-structure Bin (α : Type) where
-  bin : α → α → α
+def antisimetrica {X : Type} (R : X → X → Prop) : Prop :=
+  ∀ (x y : X), (R x y) ∧ (R y x) → x = y
 
--- Una vegada definida l'estructura podem considerar objectes del tipus Bin
-#check Bin
--- Notem que l'estructura depen d'un paràmetre α
--- Així per exemple un objecte de tipus Bin ℕ podem pensar-lo com a una instància concreta
--- d'una operació binària sobre els naturals
-#check Bin ℕ
+def transitiva {X : Type} (R : X → X → Prop) : Prop :=
+  ∀ (x y z : X), (R x y) ∧ (R y z) → (R x z)
 
--- Podem considerar estructures binàries sobre els naturals
-variable (Est : Bin ℕ)
--- Aquestes estructures ens permeten recuperar l'operació que codifiquen
-#check Est.bin
+def ordre {X : Type} (R : X → X → Prop) : Prop :=
+  reflexiva R ∧ antisimetrica R ∧ transitiva R
 
--- Podem, per exemple, definir les estructures de suma i producte
--- en els naturals que vam definir en l'anterior sessió
-def NSum : Bin N := {bin := Suma.suma}
--- També podem definir una estructura com segueix
-def NProd : Bin N where
-  bin := Producte.prod
+-- Recordem la definició de la relació diagonal
+def diag (X : Type) : X → X → Prop := by
+  intro x y
+  exact x = y
 
-#check NSum
-#check NProd
+-- La relació diagonal és una relació d'ordre
+theorem TDiagOrd {X : Type} : ordre (diag X) := by
+  rw [ordre]
+  apply And.intro
+  -- La relació diagonal és reflexiva
+  rw [reflexiva]
+  intro x
+  rw [diag]
+  --
+  apply And.intro
+  -- La relació diagonal és antisimètrica
+  rw [antisimetrica]
+  intro x y
+  intro ⟨h1, h2⟩
+  exact h1
+  -- La relació diagonal és transitiva
+  rw [transitiva]
+  intro x y z
+  intro ⟨h1, h2⟩
+  rw [diag] at h1 h2
+  rw [diag]
+  exact h1.trans h2
 
--- Donada una estructura del tipus Bin α, podem definir la iterada de l'operació  binària
-def it {α : Type} (s : Bin α) (x : α) : α :=
-  s.bin x x
+namespace Cltrans
+-- Anem a definir la clausura transitiva d'una relació
+-- Definim la composició de dues relacions
+def comp {X : Type} (R S : X → X → Prop) : X → X → Prop := by
+  intro x z
+  exact ∃(y : X), (R x y) ∧ (S y z)
 
--- Per al cas concret de N
+-- Definim la unió de dues relacions
+def unio {X : Type} (R S : X → X → Prop) : X → X → Prop := by
+  intro x y
+  exact (R x y) ∨ (S x y)
+
+-- Definim la relació d'inclusió entre dues relacions
+def subseteq {X : Type} (R S : X → X → Prop) : Prop := by
+  exact ∀(x y : X), R x y → S x y
+
+-- Emprarem notació per a la composició de dues aplicacions
+notation : 65 lhs:65 " · " rhs:66 => comp lhs rhs
+-- Emprarem notació per a la unió de dues aplicacions
+notation : 65 lhs:65 " ∪ " rhs:66 => unio lhs rhs
+-- Emprarem notació per a la relació d'inclusió entre dues aplicacions
+notation : 65 lhs:65 " ⊆ " rhs:66 => subseteq lhs rhs
+
+-- La relació diagonal és neutre per a la composició a esquerra
+theorem TDiagNCompE {X : Type} (R : X → X → Prop) : R · (diag X) = R := by
+  funext x y
+  apply propext
+  apply Iff.intro
+  -- Esquerra a dreta
+  intro h1
+  rw [comp] at h1
+  apply Exists.elim h1
+  intro z
+  intro ⟨h2, h3⟩
+  rw [diag] at h3
+  rw [h3] at h2
+  exact h2
+  -- Dreta a esquerra
+  intro h1
+  apply Exists.intro y
+  apply And.intro
+  exact h1
+  rw [diag]
+
+-- La relació diagonal és neutre per a la composició a dreta
+theorem TDiagNCompD {X : Type} (R : X → X → Prop) : (diag X) · R = R := by
+  sorry
+
+-- Importem N
 open N
-#check it NSum z
 
--- Es pot comprovar que la iterada de l'operació funciona com esperem
-theorem TItSumz : it NSum z = z := by rfl
-theorem TItSumu : it NSum uno = dos := by rfl
-theorem TItProdz : it NProd z = z := by rfl
-theorem TItProdu : it NProd uno = uno := by rfl
+-- Definim l'iterat d'una relació de forma recursiva
+def it {X : Type} (R : X → X → Prop) : N → (X → X → Prop) := by
+  intro n
+  cases n with
+  | z => exact diag X
+  | s n => exact (it R n) ∪ (it R n)·R
 
--- Les classes, per contra
-class Opbin (α : Type) where
-  bin : α → α → α
-
-#check @Opbin.bin
-
-variable (Estr : Opbin ℕ)
-#check Estr
-
--- Ara ja no podem definir objectes d'una classe amb def
--- Caldrà donar instàncies
-
-instance : Opbin N where
-  bin := Suma.suma
+-- Definim la unió de tots els iterats
+def crt {X : Type} (R : X → X → Prop) : X → X → Prop := by
+  intro x y
+  exact ∃ (n : N), it R n x y
 
 
-#check NOpbinSum
+
+
+
+
+end Cltrans
