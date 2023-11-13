@@ -38,6 +38,27 @@ def uno  : N := s zero
 def dos  : N := s uno
 -- ...
 
+-- Notem que el tipus N ens dona una álgebra de Dedekind-Peano
+-- Podem pensar en aquesta estructura com l'álgebra lliure corresponent
+-- a considerar una constant (z) i una operació binària (s)
+-- D'aquesta forma, z mai podrà ser de la forma s n per a cap n de tipus N
+theorem NInj : ∀ (n : N), z ≠ s n := by
+  intro n
+  by_contra h1
+  injection h1
+
+-- D'igual forma, s és una operació binària injectiva
+theorem NInjs : ∀ (n m : N), s n = s m → n = m := by
+  intro n m
+  intro h
+  injection h
+
+-- Per tant, la definició del tipus N ens dona una còpia dels naturals
+theorem NUnoDos : uno ≠ dos := by
+  by_contra h1
+  injection h1 with h2
+  injection h2
+
 namespace RecInd
 -- Anem a definir una aplicació de N en Prop
 -- L'aplicació compararà un objecte de tipus N amb el zero
