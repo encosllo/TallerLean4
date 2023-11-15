@@ -155,24 +155,46 @@ theorem LCrtTrans2 {X : Type} (R : X → X → Prop) (n m : N) (x y : X) (h1 : i
 
 -- Lema 3
 theorem LCrtTrans3 {X : Type} (R : X → X → Prop) (n m: N) (x1 x2 x3 : X) (h1 : it R n x1 x2) (h2 : it R m x2 x3) : it R (n + m) x1 x3 := by
+  -- Per inducció sobre m
+  --------------
+  -- Cas base
+  have hCB (h2 : it R z x2 x3) : it R (n + z) x1 x3 := by
+    have h3 : n + z = n := by exact TSuma0ND n
+    rw [h3]
+    have h4 : x2 = x3 := by exact h2
+    rw [h4] at h1
+    exact h1
+  ---------------
+  -- Pas inductiu
+  have hInd (k : N) (h2 : it R (s k) x2 x3) (hi : it R k x2 x3 → it R (n + k) x1 x3) : it R (n + s k) x1 x3 := by
+    have h3 : n + s k = s (n + k) := by
+      calc
+        n + s k = s n + k := by exact (TSumUn n k).symm
+        _ = s (n + k) := by exact rfl
+    rw [h3]
+    have h4 : ((it R k) ∪ ((it R k)·R)) x2 x3 := by exact h2
+    rw [unio] at h4
+    -- Per cassos sobre h4
+    -- El primer cas, en que it R k x2 x3, és senzill
+    have h5 (h4L : it R k x2 x3) : it R (s (n + k)) x1 x3 := by
+      have h6 : it R (n + k) x1 x3 := by exact hi h4L
+      -- Emprem el Lema1
+      apply LCrtTrans1
+      exact h6
+    -- Importa el segon cas
+    have h6 (h4R : ((it R k)·R) x2 x3) : it R (s (n + k)) x1 x3 := by
+      rw [comp] at h4R
+      apply Exists.elim h4R
+      intro x4
+      intro ⟨h4R1, h4R2⟩
 
+      sorry
+    cases h4 with
+    | inl h4L => exact h5 h4L
+    | inr h4R => exact h6 h4R
   induction m with
-  | z => sorry
-  | s m hi =>
-
-
-
-
--- Lema 4
-theorem LCrtTrans4 {X : Type} (R : X → X → Prop) (n m : N) (x1 x2 x3 : X) (h1 : it R n x1 x2) (h2 : it R m x2 x3) : it R ( (s n) + m) x1 x3 := by
-  -- Apliquem el Lema LCrtTrans2 dues voltes
-  have h3 : it R (n + m) x1 x2 := by exact LCrtTrans2 R n m x1 x2 h1
-  have h4 : it R (n + m) x2 x3 := by
-    have h5 : n + m = m + n := by exact TSumaComm n m
-    rw [h5]
-    exact LCrtTrans2 R m n x2 x3 h2
-  -- Apliquem el Lema LCrtTrans3
-  apply LCrtTrans3 R (n + m) x1 x2 x3 h3 h4
+  | z => exact hCB h2
+  | s m hi => exact hInd m h2 hi
 
 -- La clausura reflexivo-transitiva d'una relació és
 -- una relació transitiva
@@ -186,26 +208,16 @@ theorem TCrtTrans {X : Type} (R : X → X → Prop) : transitiva (crt R) := by
   apply Exists.elim h2
   intro m
   intro h3 h4
-  -- Comencem la demostració per inducció sobre n
-  --------------
-  -- Cas base
-  have hCB (h5 : it R N.z x1 x2) : crt R x1 x3 := by
-    have h6 : x1 = x2 := by exact h5
-    have h7 : it R m x1 x3 := by
-      rw [h6.symm] at h3
-      exact h3
-    rw [crt]
-    use m
-  ---------------
-  -- Pas inductiu
-  have hInd (k : N) (hi : it R k x1 x2 → crt R x1 x3) : it R (s k) x1 x2 → crt R x1 x3 := by
-    intro h5
-    ----- Ací Lema
-    sorry
-  induction n with
-  | z => exact hCB h4
-  | s n hi => exact (hInd n) hi h4
+  have h5 : it R (n + m) x1 x3 := by
+    exact LCrtTrans3 R n m x1 x2 x3 h4 h3
+  use n+m
 
+-- Anem a emprar una forma més abstracta de definir
+-- la clausura reflexivo-transitiva d'una relació
+inductive ClRT {X : Type} (R : X → X → Prop) : X → X → Prop where
+  | base : ∀ (x y: X), R x y → ClRT R x y
+  | rfl : ∀(x:X), ClRT R x x
+  | trans : ∀(x y z: X), ClRT R x y →  ClRT R y z → ClRT R x z
 
 
 end Cltrans
