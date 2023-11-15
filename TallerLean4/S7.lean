@@ -154,9 +154,14 @@ theorem LCrtTrans2 {X : Type} (R : X → X → Prop) (n m : N) (x y : X) (h1 : i
   | s m hi => exact hInd m hi
 
 -- Lema 3
-theorem LCrtTrans3 {X : Type} (R : X → X → Prop) (n : N) (x1 x2 x3 : X) (h1 : it R n x1 x2) (h2 : it R n x2 x3) : it R ( (s n) ) x1 x3 := by
-  sorry
-  --- Per inducció sobre n
+theorem LCrtTrans3 {X : Type} (R : X → X → Prop) (n m: N) (x1 x2 x3 : X) (h1 : it R n x1 x2) (h2 : it R m x2 x3) : it R (n + m) x1 x3 := by
+
+  induction m with
+  | z => sorry
+  | s m hi =>
+
+
+
 
 -- Lema 4
 theorem LCrtTrans4 {X : Type} (R : X → X → Prop) (n m : N) (x1 x2 x3 : X) (h1 : it R n x1 x2) (h2 : it R m x2 x3) : it R ( (s n) + m) x1 x3 := by
