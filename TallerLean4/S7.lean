@@ -1,27 +1,74 @@
 -- Sessió 7 - 20/11/23
--- Clausura reflexivo-transitiva d'una relació
+-- Operadors Clausura
 
 import TallerLean4.S6
 
--- Recordem que un ordre és una relació reflexiva,
--- antisimètrica i transitiva
+-- Recordem algunes definicions bàsiques
+-- Relació reflexiva
 def reflexiva {X : Type} (R : X → X → Prop) : Prop :=
   ∀ (x : X), R x x
 
+-- Relació antisimètrica
 def antisimetrica {X : Type} (R : X → X → Prop) : Prop :=
   ∀ (x y : X), (R x y) ∧ (R y x) → x = y
 
+-- Relació simètrica
+def simetrica {X : Type} (R : X → X → Prop) : Prop :=
+  ∀ (x y : X), (R x y) → (R y x)
+
+-- Relació transitiva
 def transitiva {X : Type} (R : X → X → Prop) : Prop :=
   ∀ (x y z : X), (R x y) ∧ (R y z) → (R x z)
 
+-- Un ordre és una relació reflexiva, antisimètrica i transitiva
 def ordre {X : Type} (R : X → X → Prop) : Prop :=
   reflexiva R ∧ antisimetrica R ∧ transitiva R
+
+-- Una relació d'equivalència és una relació reflexiva, simètrica i transitiva
+def equivalencia {X : Type} (R : X → X → Prop) : Prop :=
+  reflexiva R ∧ simetrica R ∧ transitiva R
 
 -- Recordem la definició de la relació diagonal
 def diag (X : Type) : X → X → Prop := by
   intro x y
   exact x = y
 
+-- Definim operacions bàsiques sobre les relacions
+-- Definim la composició de dues relacions
+def comp {X : Type} (R S : X → X → Prop) : X → X → Prop := by
+  intro x z
+  exact ∃(y : X), (R x y) ∧ (S y z)
+
+-- Definim la inversa d'una relació
+def inv {X : Type} (R : X → X → Prop) : X → X → Prop := by
+  intro x y
+  exact R y x
+
+-- Definim la unió de dues relacions
+def unio {X : Type} (R S : X → X → Prop) : X → X → Prop := by
+  intro x y
+  exact (R x y) ∨ (S x y)
+
+-- Definim la intersecció de dues relacions
+def interseccio {X : Type} (R S : X → X → Prop) : X → X → Prop := by
+  intro x y
+  exact (R x y) ∧ (S x y)
+
+-- Definim la relació d'inclusió entre dues relacions
+def subseteq {X : Type} (R S : X → X → Prop) : Prop := by
+  exact ∀(x y : X), R x y → S x y
+
+-- Emprarem notació per a la composició de dues aplicacions
+notation : 65 lhs:65 " · " rhs:66 => comp lhs rhs
+-- Emprarem notació per a la unió de dues aplicacions
+notation : 65 lhs:65 " ∪ " rhs:66 => unio lhs rhs
+-- Emprarem notació per a la intersecció de dues aplicacions
+notation : 65 lhs:65 " ∩ " rhs:66 => unio lhs rhs
+-- Emprarem notació per a la relació d'inclusió entre dues aplicacions
+notation : 65 lhs:65 " ⊆ " rhs:66 => subseteq lhs rhs
+
+namespace PropietatsRelacions
+-- Comprovem algunes propietats bàsiques de les operacions sobre relacions que acabem de vore
 -- La relació diagonal és una relació d'ordre
 theorem TDiagOrd {X : Type} : ordre (diag X) := by
   rw [ordre]
@@ -45,28 +92,28 @@ theorem TDiagOrd {X : Type} : ordre (diag X) := by
   rw [diag]
   exact h1.trans h2
 
-namespace Cltrans
--- Anem a definir la clausura transitiva d'una relació
--- Definim la composició de dues relacions
-def comp {X : Type} (R S : X → X → Prop) : X → X → Prop := by
-  intro x z
-  exact ∃(y : X), (R x y) ∧ (S y z)
-
--- Definim la unió de dues relacions
-def unio {X : Type} (R S : X → X → Prop) : X → X → Prop := by
+-- La relació diagonal és una relació d'equivalència
+theorem TDiagEqv {X : Type} : equivalencia (diag X) := by
+  rw [equivalencia]
+  apply And.intro
+  -- La relació diagonal és reflexiva
+  rw [reflexiva]
+  intro x
+  rw [diag]
+  --
+  apply And.intro
+  -- La relació diagonal és simètrica
+  rw [simetrica]
   intro x y
-  exact (R x y) ∨ (S x y)
-
--- Definim la relació d'inclusió entre dues relacions
-def subseteq {X : Type} (R S : X → X → Prop) : Prop := by
-  exact ∀(x y : X), R x y → S x y
-
--- Emprarem notació per a la composició de dues aplicacions
-notation : 65 lhs:65 " · " rhs:66 => comp lhs rhs
--- Emprarem notació per a la unió de dues aplicacions
-notation : 65 lhs:65 " ∪ " rhs:66 => unio lhs rhs
--- Emprarem notació per a la relació d'inclusió entre dues aplicacions
-notation : 65 lhs:65 " ⊆ " rhs:66 => subseteq lhs rhs
+  intro h1
+  exact h1.symm
+  -- La relació diagonal és transitiva
+  rw [transitiva]
+  intro x y z
+  intro ⟨h1, h2⟩
+  rw [diag] at h1 h2
+  rw [diag]
+  exact h1.trans h2
 
 -- La relació diagonal és neutre per a la composició a esquerra
 theorem TDiagNCompE {X : Type} (R : X → X → Prop) : R · (diag X) = R := by
@@ -93,6 +140,22 @@ theorem TDiagNCompE {X : Type} (R : X → X → Prop) : R · (diag X) = R := by
 theorem TDiagNCompD {X : Type} (R : X → X → Prop) : (diag X) · R = R := by
   sorry
 
+-- Una relació és reflexiva si, i només si, conté a la diagonal
+theorem TCRfl {X : Type} (R : X → X → Prop) : reflexiva R ↔ diag X ⊆ R := by
+  sorry
+
+-- Una relació és simètrica si, i només si, conté a la seua inversa
+theorem TCSim {X : Type} (R : X → X → Prop) : simetrica R ↔ inv R ⊆ R := by
+  sorry
+
+-- Una relació és transitiva si, i només si, conté al seu quadrat
+theorem TCTrans {X : Type} (R : X → X → Prop) : transitiva R ↔ R·R ⊆ R := by
+  sorry
+
+end PropietatsRelacions
+
+namespace ClRT
+-- Anem a definir la clausura reflexivo-transitiva d'una relació
 -- Importem N
 open N
 
@@ -304,4 +367,113 @@ theorem TClRT {X : Type} (R : X → X → Prop) : ClRT R = crt R := by
   exact TClRTincCrt R x y
   exact TCrtincClRT R x y
 
-end Cltrans
+end ClRT
+
+namespace Eqvgen
+-- Anem a definir la mínima relació d'equivalència que conté una relació donada
+-- Farem com abans, donarem dues formes equivalents de construïr aquest operador
+
+-- Importem N
+open N
+
+-- Definim l'iterat d'una relació de forma recursiva
+def it {X : Type} (R : X → X → Prop) : N → (X → X → Prop) := by
+  intro n
+  cases n with
+  | z => exact diag X
+  | s n => exact (it R n) ∪ (inv (it R n)) ∪ ((it R n)·R)
+
+-- Definim la unió de tots els iterats, està serà la
+-- mínima relació d'equivalència que conté una relació donada
+def eqvgen {X : Type} (R : X → X → Prop) : X → X → Prop := by
+  intro x y
+  exact ∃ (n : N), it R n x y
+
+-- eqvgen R conté a R
+theorem TEqvgenBase {X : Type} (R : X → X → Prop) : R ⊆ eqvgen R := by
+  sorry
+
+-- eqvgen R és reflexiva
+theorem TEqvgenRfl {X : Type} (R : X → X → Prop) : reflexiva (eqvgen R) := by
+  sorry
+
+-- eqvgen R és simètrica
+theorem TEqvgenSim {X : Type} (R : X → X → Prop) : simetrica (eqvgen R) := by
+  sorry
+
+-- eqvgen R és transitiva
+theorem TEqvgenTrans {X : Type} (R : X → X → Prop) : transitiva (eqvgen R) := by
+  sorry
+
+-- Per tant, eqvgen R és una relació d'equivalència
+theorem TEqvgenEqv {X : Type} (R : X → X → Prop) : equivalencia (eqvgen R) := by
+  sorry
+
+-- evgen R és la mínima relació d'equivalència que conté a R
+theorem TEqvgenmin {X : Type} (R S: X → X → Prop) (h1: R ⊆ S) (h2: equivalencia S) : (eqvgen R) ⊆ S := by
+  sorry
+
+-- Anem a emprar una forma més abstracta de definir
+-- La mínima relació d'equivalència que conté una relació donadad
+inductive Eqvgen {X : Type} (R : X → X → Prop) : X → X → Prop where
+  | base : ∀ (x y: X), R x y → Eqvgen R x y
+  | rfl : ∀(x:X), Eqvgen R x x
+  | sim : ∀(x y:X), Eqvgen R x y → Eqvgen R y x
+  | trans : ∀(x y z: X), Eqvgen R x y →  Eqvgen R y z → Eqvgen R x z
+
+-- Aleshores les dues definicions coincideixen
+theorem TEqvgen {X : Type} (R : X → X → Prop) : Eqvgen R = eqvgen R := by
+  sorry
+
+end Eqvgen
+
+
+namespace OpCl
+-- Operadors clausura
+-- Un operador és una endoaplicació de relacions sobre un tipus X
+-- És a dir, un objecte del tipus (X → X → Prop) → (X → X → Prop)
+
+-- Direm que un operador és extensiu si
+def extensiu {X : Type} (Op : (X → X → Prop) → (X → X → Prop)) : Prop :=
+  ∀(R : X → X → Prop), R ⊆ Op R
+
+-- Direm que un operador és monòton si
+def monoton {X : Type} (Op : (X → X → Prop) → (X → X → Prop)) : Prop :=
+  ∀(R S: X → X → Prop), R ⊆ S → Op R ⊆ Op S
+
+-- Direm que un operador és idempotent si
+def idempotent {X : Type} (Op : (X → X → Prop) → (X → X → Prop)) : Prop :=
+  ∀(R : X → X → Prop), Op (Op R) ⊆ Op R
+
+-- Finalment, direm que un operador és de clausura si
+def Operadorclausura {X : Type} (Op : (X → X → Prop) → (X → X → Prop)) : Prop :=
+  extensiu Op ∧ monoton Op ∧ idempotent Op
+
+-- Els operadors que hem definit abans són de clausura
+------------------------------
+-- Obrim ClRT
+open ClRT
+
+-- Definim l'operador associat a la clausura reflexivo-transitiva
+def ClRTOp (X : Type) : (X → X → Prop) → X → X → Prop := by
+  intro R
+  exact ClRT R
+
+-- L'operador clausura reflexivo-transitiva és un operador de clausura
+theorem TClRTCl {X : Type} : Operadorclausura (ClRTOp X) := by
+  sorry
+
+------------------------------
+-- Obrim Eqvgen
+open Eqvgen
+
+-- Definim l'operador associat a la relació d'equivalència generada
+def EqvgenOp (X : Type) : (X → X → Prop) → X → X → Prop := by
+  intro R
+  exact Eqvgen R
+
+-- L'operador equivalència generada és un operador de clausura
+theorem TEqvgenCl {X : Type} : Operadorclausura (EqvgenOp X) := by
+  sorry
+
+end OpCl
