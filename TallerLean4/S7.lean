@@ -1,5 +1,5 @@
 -- Sessió 7 - 20/11/23
--- Definim l'ordre sobre els naturals
+-- Clausura reflexivo-transitiva d'una relació
 
 import TallerLean4.S6
 
@@ -109,6 +109,17 @@ def crt {X : Type} (R : X → X → Prop) : X → X → Prop := by
   intro x y
   exact ∃ (n : N), it R n x y
 
+-- La clausura reflexivo-transitiva d'una relació conté a la relació
+theorem TCrtBase {X : Type} (R : X → X → Prop) : R ⊆ crt R := by
+  intro x y
+  intro h1
+  use (s z)
+  apply Or.inr
+  use x
+  apply And.intro
+  exact rfl
+  exact h1
+
 -- La clausura reflexivo-transitiva d'una relació és
 -- una relació reflexiva
 theorem TCrtRfl {X : Type} (R : X → X → Prop) : reflexiva (crt R) := by
@@ -212,6 +223,30 @@ theorem TCrtTrans {X : Type} (R : X → X → Prop) : transitiva (crt R) := by
     exact LCrtTrans3 R n m x1 x2 x3 h4 h3
   use n+m
 
+-- Aquesta nova relació és la mínima que conté a R, és reflexiva i transitiva
+theorem TCrtMin {X : Type} (R S: X → X → Prop) (h1: R ⊆ S) (h2: reflexiva S) (h3: transitiva S) : (crt R) ⊆ S := by
+  intro x y
+  intro h4
+  have h5 : ∀ (n:N), it R n x y → S x y := by
+    intro n
+    intro h5
+    -- Per inducció sobre n
+    --------------
+    -- Cas base
+    have hCB (h6: it R z x y) : S x y := by
+      sorry
+    ---------------
+    -- Pas inductiu
+    have hInd (k : N) (h6: it R k x y → S x y) (h7: it R (s k) x y) : S x y := by
+      sorry
+    -- Ara fem l'inducció
+    induction n with
+    | z => exact hCB h5
+    | s n hi => exact hInd n hi h5
+  apply Exists.elim h4
+  intro n
+  exact h5 n
+
 -- Anem a emprar una forma més abstracta de definir
 -- la clausura reflexivo-transitiva d'una relació
 inductive ClRT {X : Type} (R : X → X → Prop) : X → X → Prop where
@@ -219,5 +254,54 @@ inductive ClRT {X : Type} (R : X → X → Prop) : X → X → Prop where
   | rfl : ∀(x:X), ClRT R x x
   | trans : ∀(x y z: X), ClRT R x y →  ClRT R y z → ClRT R x z
 
+  -- Aquesta nova relació conté a R
+  theorem TClRTbase {X : Type} (R : X → X → Prop) : R ⊆ ClRT R := by
+    intro x y
+    intro h1
+    exact ClRT.base x y h1
+
+  -- Aquesta nova relació és reflexiva
+  theorem TClRTrfl {X : Type} (R : X → X → Prop) : reflexiva (ClRT R) := by
+    rw [reflexiva]
+    intro x
+    exact ClRT.rfl x
+
+  -- Aquesta nova relació és transitiva
+  theorem TClRTtrans {X : Type} (R : X → X → Prop) : transitiva (ClRT R) := by
+    rw [transitiva]
+    intro x y z
+    intro ⟨h1, h2⟩
+    exact ClRT.trans x y z h1 h2
+
+  -- Aquesta nova relació és la mínima que conté a R, és reflexiva i transitiva
+  theorem TClRMin {X : Type} (R S: X → X → Prop) (h1: R ⊆ S) (h2: reflexiva S) (h3: transitiva S) : (ClRT R) ⊆ S := by
+    intro x y
+    intro h4
+    induction h4 with
+    | base a b h4 => exact h1 a b h4
+    | rfl z => exact h2 z
+    | trans a b c h4 h5 h6 h7 => exact h3 a b c (And.intro h6 h7)
+
+-- Per tant, ClRT R ⊆ Crt R
+theorem TClRTincCrt {X : Type} (R : X → X → Prop) : ClRT R ⊆ crt R := by
+  apply TClRMin
+  exact TCrtBase R
+  exact TCrtRfl R
+  exact TCrtTrans R
+
+-- Per tant, crt R ⊆ ClRT R
+theorem TCrtincClRT {X : Type} (R : X → X → Prop) : crt R ⊆ ClRT R := by
+  apply TCrtMin
+  exact TClRTbase R
+  exact TClRTrfl R
+  exact TClRTtrans R
+
+-- Aleshores les dues definicions coincideixen
+theorem TClRT {X : Type} (R : X → X → Prop) : ClRT R = crt R := by
+  funext x y
+  apply propext
+  apply Iff.intro
+  exact TClRTincCrt R x y
+  exact TCrtincClRT R x y
 
 end Cltrans
