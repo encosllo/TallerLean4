@@ -22,13 +22,19 @@ de Lean 4, però també es pot fer manualment seguint les instruccions de la
 Podeu trobar altres requirements i detalls al [blog del Taller de Lean
 4](https://www.uv.es/coslloen/Lean4.html).
 
-### Entorn de Lean i altres requeriments
+### Inicialització
+
+Clonem el repositori
+```bash
+git clone https://github.com/encosllo/TallerLean4
+```
+
+Recordeu obrir la carpeta on esteu treballant al Visual Studio Code.
 
 Per tal d'activar l'entorn de treball, només cal executar la següent comanda
 en la terminal:
 
 ```bash
-lake update # <- Per baixar i actualitzar les dependències
 lake build # <- Per compilar el nostre i codi i poder accedir a ell
 ```
 
@@ -63,17 +69,3 @@ del repositori remot, podeu fer un _rebase_ de la branca remota `main`:
 ```bash
 git rebase origin/main
 ```
-
-### Inicialització
-
-Clonem el repositori
-```bash
-git clone https://github.com/encosllo/TallerLean4
-```
-
-A continuació actualitzem el sistema
-```bash
-lake exe cache get
-```
-
-Recordeu obrir la carpeta on esteu treballant al Visual Studio Code.
