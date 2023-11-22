@@ -1,63 +1,56 @@
 -- Sessió 8 - 27/11/23
--- Definim structures i classes
+-- Definim l'ordre sobre els naturals
 
 import TallerLean4.S7
 
--- En aquesta sessió anem a implementar classes i estructures
--- Seguirem https://lean-lang.org/theorem_proving_in_lean4/type_classes.html
+-- En aquesta sessió anem a implementar l'ordre habitual sobre els naturals
 
--- Definim una estructura que dependrà d'un tipus α
--- i contindrà tipus amb operacions binàries
-structure Bin (α : Type) where
-  bin : α → α → α
+-- Recordem algunes definicions bàsiques
+-- Relació irreflexiva
+def irreflexiva {X : Type} (R : X → X → Prop) : Prop :=
+  ∀ (x : X), ¬ R x x
 
--- Una vegada definida l'estructura podem considerar objectes del tipus Bin
-#check Bin
--- Notem que l'estructura depen d'un paràmetre α
--- Així per exemple un objecte de tipus Bin ℕ podem pensar-lo com a una instància concreta
--- d'una operació binària sobre els naturals
-#check Bin ℕ
-
--- Podem considerar estructures binàries sobre els naturals
-variable (Est : Bin ℕ)
--- Aquestes estructures ens permeten recuperar l'operació que codifiquen
-#check Est.bin
-
--- Podem, per exemple, definir les estructures de suma i producte
--- en els naturals que vam definir en l'anterior sessió
-def NSum : Bin N := {bin := Suma.suma}
--- També podem definir una estructura com segueix
-def NProd : Bin N where
-  bin := Producte.prod
-
-#check NSum
-#check NProd
-
--- Donada una estructura del tipus Bin α, podem definir la iterada de l'operació  binària
-def it {α : Type} (s : Bin α) (x : α) : α :=
-  s.bin x x
-
--- Per al cas concret de N
+-- Obrim els resultats de la clausura reflexivo-transitiva
+open ClRT
+-- Obrim els nostre naturals
 open N
-#check it NSum z
 
--- Es pot comprovar que la iterada de l'operació funciona com esperem
-theorem TItSumz : it NSum z = z := by rfl
-theorem TItSumu : it NSum uno = dos := by rfl
-theorem TItProdz : it NProd z = z := by rfl
-theorem TItProdu : it NProd uno = uno := by rfl
-
--- Les classes, per contra
-class Opbin (α : Type) where
-  bin : α → α → α
-
-#check @Opbin.bin
-
-variable (Estr : Opbin ℕ)
-#check Estr
-
--- Ara ja no podem definir objectes d'una classe amb def
--- Caldrà donar instàncies
-
-instance : Opbin N where
-  bin := Suma.suma
+-- El següent resultat ens diu que si una relació és irreflexiva,
+-- aleshores la seua clausura reflexivo-transitiva és un ordre
+theorem TIrrOr {X : Type} (R : X → X → Prop) (h : irreflexiva R) : ordre (crt R) := by
+  rw [ordre]
+  apply And.intro
+  -- Reflexiva
+  exact TCrtRfl R
+  --
+  apply And.intro
+  -- Antisimètrica
+  rw [antisimetrica]
+  intro x y
+  intro ⟨h1, h2⟩
+  apply Exists.elim h1
+  intro n
+  intro h3
+  apply Exists.elim h2
+  intro m
+  intro h4
+  -- Per inducció sobre n
+  induction n
+  -- Cas base
+  exact h3
+  rename_i n hIndn
+  -- Per inducció sobre m
+  induction m
+  -- Cas base
+  exact h4.symm
+  rename_i m hIndm
+  --
+  cases h3
+  rename_i h5
+  exact hIndn h5
+  rename_i h5
+  cases h4
+  rename_i h4
+  exact hIndm h4
+  rename_i h4
+  sorry

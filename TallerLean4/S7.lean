@@ -63,7 +63,7 @@ notation : 65 lhs:65 " · " rhs:66 => comp lhs rhs
 -- Emprarem notació per a la unió de dues aplicacions
 notation : 65 lhs:65 " ∪ " rhs:66 => unio lhs rhs
 -- Emprarem notació per a la intersecció de dues aplicacions
-notation : 65 lhs:65 " ∩ " rhs:66 => unio lhs rhs
+notation : 65 lhs:65 " ∩ " rhs:66 => interseccio lhs rhs
 -- Emprarem notació per a la relació d'inclusió entre dues aplicacions
 notation : 65 lhs:65 " ⊆ " rhs:66 => subseteq lhs rhs
 
