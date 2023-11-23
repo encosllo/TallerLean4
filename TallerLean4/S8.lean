@@ -95,8 +95,35 @@ theorem LOrd4 (n m : N) (h1 : n ≼ m) : s n ≼ s m := by
   rw [Dprec] at h1
   exact congrArg s h1
 
+
 -- Lema 5
-theorem LOrd5 (n m : N) (h1 : n ≤ m) : s n ≤ s m := by
+theorem LOrd5 (n m k : N) (h1 : it Dprec k n m) : it Dprec k (s n) (s m) := by
+  -- Per inducció sobre k
+  induction k
+  -- Cas base
+  have h2 : n = m := by exact h1
+  exact congrArg s h1
+  -- Pas inductiu
+  rename_i k hInd
+  -- Per casos sobre h1
+  cases h1
+  -- inl
+  rename_i hinl
+  exact Or.inl (hInd hinl)
+  -- inr
+  rename_i hinr
+  apply Exists.elim hinr
+  intro p
+  intro ⟨h1, h2⟩
+  apply Or.inr
+  use s p
+  apply And.intro
+  rw [Dprec] at h2
+  rw [h2.symm]
+  sorry
+
+-- Lema 6
+theorem LOrd6 (n m : N) (h1 : n ≤ m) : s n ≤ s m := by
   rw [Dleq] at h1
   apply Exists.elim h1
   intro k h2
@@ -118,11 +145,14 @@ theorem LOrd5 (n m : N) (h1 : n ≤ m) : s n ≤ s m := by
   intro p
   intro ⟨h3, h4⟩
   rw [Dprec] at h4
-  use k
+  use s k
+  apply Or.inr
+  use s p
+  apply And.intro
   sorry
 
--- Lema 6
-theorem LOrd6 (n m : N) (h1 : n ≼ m) : ¬ (m ≤ n) := by
+-- Lema 7
+theorem LOrd7 (n m : N) (h1 : n ≼ m) : ¬ (m ≤ n) := by
   by_contra h2
   rw [Dprec] at h1
   rw [h1] at h2
