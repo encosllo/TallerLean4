@@ -59,6 +59,24 @@ theorem NUnoDos : uno ≠ dos := by
   injection h1 with h2
   injection h2
 
+-- Anem a demostrar teoremes sobre N
+-- Les demostracions es faran per inducció
+-- induction és un procediment que serveix per a tot tipus inductiu
+
+-- Anem a demostrar que cap natural pot ser el seu successor
+theorem NInjsuc (n : N) : ¬ (n = s n) := by
+  -- Fem la demostració per inducció sobre n
+  induction n
+  -- Cas base
+  by_contra h
+  injection h
+  -- Pas inductiu
+  -- Reanomenem les hipòtesi per a poder treballar
+  rename_i n h1
+  by_contra h2
+  injection h2 with h2
+  exact h1 h2
+
 namespace RecInd
 -- Anem a definir una aplicació de N en Prop
 -- L'aplicació compararà un objecte de tipus N amb el zero
@@ -73,10 +91,6 @@ def Eqzero : N → Bool := by
 
 #eval Eqzero zero
 #eval Eqzero uno
-
--- Anem a demostrar teoremes sobre N
--- Les demostracions es faran per inducció
--- induction és un procediment que serveix per a tot tipus inductiu
 
 -- Tots els termes de la forma s n són diferents de zero
 theorem EqzeroA : ∀(n:N), Eqzero (s n) = false := by
