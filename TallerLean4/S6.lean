@@ -251,6 +251,34 @@ theorem TSumaComm : ∀(n m : N), n + m = m + n := by
   | z => exact hCB m
   | s n hi => exact hInd n m hi
 
+-- Si dos elements de tipus N sumen z
+-- aleshores el primer és z
+theorem TSumaz (n m : N) : n + m = z → n = z := by
+  intro h1
+  induction m
+  -- Cas base
+  calc
+    n = n + z := by exact (TSuma0ND n).symm
+    _ = z := by exact h1
+  -- Pas inductiu
+  rename_i k hInd
+  have h2 : s (n+k) = z := by
+    calc
+      s (n + k) = (s n) + k := by exact rfl
+      _ = n + (s k) := by exact TSumUn n k
+      _ = z := by exact h1
+  injection h2
+
+-- Si dos elements de tipus N sumen z
+-- aleshores els dos són z
+theorem TSumaz2 (n m : N) : n + m = z → (n = z) ∧ (m = z)  := by
+  intro h1
+  apply And.intro
+  exact TSumaz n m h1
+  have h2 : n + m = m + n := by exact TSumaComm n m
+  rw [h2] at h1
+  exact TSumaz m n h1
+
 -- La suma és associativa
 theorem TSumaAss : ∀(n m p : N), (n + m) + p = n + (m + p) := by
   -----------

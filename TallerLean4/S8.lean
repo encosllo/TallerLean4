@@ -87,7 +87,7 @@ theorem LOrd3 (n : N) (h1: n ≠ z) : ¬ (n ≤ z) := by
   apply Exists.elim hinr
   intro m
   intro h3
-  have h4 : ¬ (m≼z) := by exact LOrd2 m
+  have h4 : ¬ (m ≼ z) := by exact LOrd2 m
   exact h4 h3.right
 
 -- Lema 4
@@ -95,117 +95,47 @@ theorem LOrd4 (n m : N) (h1 : n ≼ m) : s n ≼ s m := by
   rw [Dprec] at h1
   exact congrArg s h1
 
-
 -- Lema 5
-theorem LOrd5 (n m k : N) (h1 : it Dprec k n m) : it Dprec k (s n) (s m) := by
+theorem LOrd5 (n m k : N) : (it Dprec k n m) → (it Dprec k m n) → k = z := by
+  intro h1 h2
   -- Per inducció sobre k
   induction k
   -- Cas base
-  have h2 : n = m := by exact h1
-  exact congrArg s h1
+  exact rfl
   -- Pas inductiu
-  rename_i k hInd
-  -- Per casos sobre h1
+  rename_i p hInd
   cases h1
-  -- inl
-  rename_i hinl
-  exact Or.inl (hInd hinl)
-  -- inr
-  rename_i hinr
-  apply Exists.elim hinr
-  intro p
-  intro ⟨h1, h2⟩
-  apply Or.inr
-  use s p
-  apply And.intro
-  rw [Dprec] at h2
-  rw [h2.symm]
   sorry
+
+open Suma
+#check TSumaComm
 
 -- Lema 6
-theorem LOrd6 (n m : N) (h1 : n ≤ m) : s n ≤ s m := by
-  rw [Dleq] at h1
+theorem LOrd6 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
+  intro h1 h2
   apply Exists.elim h1
-  intro k h2
-  -- Per inducció sobre k
-  induction k
-  -- Cas base
-  have h3 : n = m := by exact h2
-  use z
-  exact congrArg s h2
-  -- Pas inductiu
-  rename_i k hIndk
-  cases h2
-  -- Cas inl
-  rename_i hinl
-  exact hIndk hinl
-  -- Cas inr
-  rename_i hinr
-  apply Exists.elim hinr
-  intro p
-  intro ⟨h3, h4⟩
-  rw [Dprec] at h4
-  use s k
-  apply Or.inr
-  use s p
-  apply And.intro
-  sorry
-
--- Lema 7
-theorem LOrd7 (n m : N) (h1 : n ≼ m) : ¬ (m ≤ n) := by
-  by_contra h2
-  rw [Dprec] at h1
-  rw [h1] at h2
-  rw [Dleq] at h2
-  -- Per inducció sobre n
-  induction n
-  -- Cas base
-  have h3 : (s z) ≤ z := by exact h2
-  have h4 : s z ≠ z := by
-    by_contra h4
-    injection h4
-  have h5 : ¬ (s z ≤ z) := by exact LOrd3 (s z) h4
-  exact h5 h2
-  -- Pas inductiu
-  rename_i k hInd
+  intro k h3
   apply Exists.elim h2
-  intro l
-  intro h3
-  induction l
-  have h4 : s (s k) = s k := by exact h3
-  injection h4 with h4
-  rw [h4] at h1 h2
-  exact hInd h1 h2
-  rename_i l hIndl
-  -- Per casos sobre h3
-  cases h3
-  -- Cas inl
-  rename_i hinl
-  exact hIndl hinl
-  -- Cas inr
-  rename_i hinr
-  apply Exists.elim hinr
-  intro p
-  intro ⟨h3, h4⟩
-  rw [Dprec] at h4
-  injection h4 with h4
-  rw [h4.symm] at h3
-
-
-
-
-
-
-
-
-
-
+  intro l h4
+  have h5 : it Dprec (k+l) n m :=  by
+    apply LCrtTrans2 Dprec k l
+    exact h3
+  have h6 : it Dprec (l+k) m n :=  by
+    apply LCrtTrans2 Dprec l k
+    exact h4
+  have h7 : k + l = l + k := by
+    apply TSumaComm
+  rw [h7] at h5
+  have h8 : l+k = z := by
+    exact LOrd5 n m (l+k) h5 h6
+  have h9 : l = z := by
+    exact TSumaz l k h8
+  rw [h9] at h4
+  exact h4.symm
 
 -- La relació ≤ és antisimètrica
 theorem DleqAnti : antisimetrica Dleq := by
   rw [antisimetrica]
   intro n m
   intro ⟨h1, h2⟩
-  -- Per inducció sobre h1
-  induction h1
-  rename_i p q h1
+  exact LOrd6 n m h1 h2
