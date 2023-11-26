@@ -159,7 +159,7 @@ namespace ClRT
 -- Importem N
 open N
 
--- Definim l'iterat d'una relació de forma recursiva
+-- Definim l'iterat a esquerra d'una relació de forma recursiva
 def it {X : Type} (R : X → X → Prop) : N → (X → X → Prop) := by
   intro n
   cases n with
