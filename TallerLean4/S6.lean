@@ -304,6 +304,30 @@ theorem TSumaAss : ∀(n m p : N), (n + m) + p = n + (m + p) := by
   | z => exact hCB n m
   | s p hi => exact hInd n m p hi
 
+---
+
+-- Incompatibilitats
+theorem TIncSuc (n k : N) : n = n + (s k) → False := by
+  intro h1
+  induction n
+  have h2 : z = s k := by exact h1
+  injection h2
+  rename_i n hInd
+  have h2 : s n + s k = s (n + s k) :=by exact rfl
+  rw [h2] at h1
+  injection h1 with h1
+  exact hInd h1
+
+theorem TIncSuma (n m k : N) : m = n + (s k) →  n = m + (s k) → False := by
+  intro h1 h2
+  rw [h2] at h1
+  have h3 : s k + s k = s (k + s k) := by exact rfl
+  have h5: m + s k + s k = m + (s k + s k) := by exact TSumaAss m (s k) (s k)
+  have h4 : m + (s k + s k) = m + s (k + s k) := by exact rfl
+  rw [h5] at h1
+  rw [h4] at h1
+  exact TIncSuc m (k + s k) h1
+
 end Suma
 
 namespace Producte

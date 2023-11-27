@@ -221,8 +221,71 @@ theorem LOrd10 (n k : N) : ¬(it Dprec k (s n) n) := by
     exact (LOrd9 (s n) k n).mpr h1
   exact hInd h2
 
+-- Obrim la suma
+open Suma
+
 -- Lema 11
-theorem LOrd11 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → n = m := by
+theorem LOrd11 (n k : N) : ∀(m:N), it Dprec (s k) n m → (it Dprec k n m) ∨ m = s (n + k) := by
+  induction k
+  -- Cas base
+  intro m
+  intro h1
+  cases h1
+  --
+  rename_i h1l
+  exact Or.inl h1l
+  --
+  rename_i h1r
+  apply Exists.elim h1r
+  intro p
+  intro ⟨h1, h2⟩
+  have h3 : n = p := by exact h1
+  rw [h3.symm] at h2
+  rw [Dprec] at h2
+  apply Or.inr
+  have h4 : n = n+z := by exact (TSuma0ND n).symm
+  rw [h4.symm]
+  exact h2
+  --
+  -- Pas inductiu
+  rename_i k hInd
+  intro m
+  intro h1
+  cases h1
+  --
+  rename_i h1l
+  exact Or.inl h1l
+  --
+  rename_i h1r
+  apply Exists.elim h1r
+  intro p
+  intro ⟨h1,h2⟩
+  have h3 : it Dprec k n p ∨ p = s (n + k) := by exact hInd p h1
+  cases h3
+  --
+  rename_i h3l
+  apply Or.inl
+  apply Or.inr
+  use p
+  --
+  rename_i h3r
+  apply Or.inr
+  have h4 : s (n + k) = n + (s k) := by
+    calc
+      s (n + k) = (s n) + k := by exact rfl
+      _ = n + (s k) := by exact TSumUn n k
+  calc
+    m = s p := by exact h2
+    _ = s (s (n + k)) := by exact congrArg s h3r
+    _ = s (n + (s k)) := by exact congrArg s h4
+--
+
+-- Lema 12
+theorem LOrd12  (k : N) : ∀(n m : N), it Dprec k n m → n = s (m + k) → False := by
+  sorry
+
+-- Lema 13
+theorem LOrd13 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → n = m := by
   induction k
   -- Cas base
   intro n m
@@ -232,42 +295,46 @@ theorem LOrd11 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → 
   rename_i k hInd
   intro n m
   intro h1 h2
-  cases h1
-  -- Cas h1 left
-  rename_i h1l
-  cases h2
-  -- Cas h2 left
-  rename_i h2l
-  exact (hInd n m) h1l h2l
-  -- Cas h2 right
-  rename_i h2r
-  apply Exists.elim h2r
-  intro p
-  intro ⟨h3, h4⟩
-  rw [Dprec] at h4
-  have h5: False := by
-    rw [h4] at h1l
-    sorry
-  exact False.elim h5
-  -- Cas h1 right
-  rename_i h1r
-  apply Exists.elim h1r
-  intro p
-  intro ⟨h3,h4⟩
-
-
-
-
-
-
-
+  have h3 : (it Dprec k n m) ∨ m = s (n + k) := by exact LOrd11 n k m h1
+  have h4 : (it Dprec k m n) ∨ n = s (m + k) := by exact LOrd11 m k n h2
+  cases h3
+  -- Cas 3 left
+  rename_i h3l
+  cases h4
+  -- Cas 4 left
+  rename_i h4l
+  exact (hInd n m) h3l h4l
+  -- Cas 4 right
+  rename_i h4r
+  apply False.elim
+  apply LOrd12
+  exact h3l
+  exact h4r
+  -- Cas 3 right
+  rename_i h3r
+  cases h4
+  -- Cas 4 left
+  rename_i h4l
+  apply False.elim
+  apply LOrd12
+  exact h4l
+  exact h3r
+  -- Cas 4 right
+  rename_i h4r
+  apply False.elim
+  apply TIncSuma n m k
+  calc
+    m = s (n + k) := by exact h3r
+    _ = s n + k := by exact rfl
+    _ = n + s k := by exact TSumUn n k
+  calc
+    n = s (m + k) := by exact h4r
+    _ = s m + k := by exact rfl
+    _ = m + s k := by exact TSumUn m k
 --
 
-open Suma
-#check TSumaComm
-
--- Lema 12
-theorem LOrd12 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
+-- Lema 14
+theorem LOrd14 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
   intro h1 h2
   apply Exists.elim h1
   intro k h3
@@ -282,14 +349,14 @@ theorem LOrd12 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
   have h7 : k + l = l + k := by
     apply TSumaComm
   rw [h7] at h5
-  exact LOrd11 (l + k) n m h5 h6
+  exact LOrd13 (l + k) n m h5 h6
 
 -- La relació ≤ és antisimètrica
 theorem DleqAnti : antisimetrica Dleq := by
   rw [antisimetrica]
   intro n m
   intro ⟨h1, h2⟩
-  exact LOrd12 n m h1 h2
+  exact LOrd14 n m h1 h2
 
 -- La relació ≤ és transitiva
 theorem DleqTrans : transitiva Dleq := by
