@@ -222,24 +222,46 @@ theorem LOrd10 (n k : N) : ¬(it Dprec k (s n) n) := by
   exact hInd h2
 
 -- Lema 11
-theorem LOrd11 (n m k : N) : (it Dprec k n m) → (it Dprec k m n) → n = m := by
+theorem LOrd11 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → n = m := by
   induction k
   -- Cas base
+  intro n m
   intro h1 h2
   exact h1
   -- Pas inductiu
   rename_i k hInd
+  intro n m
   intro h1 h2
   cases h1
-  rename_i h1inl
+  -- Cas h1 left
+  rename_i h1l
   cases h2
-  rename_i h2inl
-  exact hInd h1inl h2inl
-  rename_i h2inr
-  apply Exists.elim h2inr
+  -- Cas h2 left
+  rename_i h2l
+  exact (hInd n m) h1l h2l
+  -- Cas h2 right
+  rename_i h2r
+  apply Exists.elim h2r
   intro p
-  intro ⟨h2,h3⟩
-  sorry
+  intro ⟨h3, h4⟩
+  rw [Dprec] at h4
+  have h5: False := by
+    rw [h4] at h1l
+    sorry
+  exact False.elim h5
+  -- Cas h1 right
+  rename_i h1r
+  apply Exists.elim h1r
+  intro p
+  intro ⟨h3,h4⟩
+
+
+
+
+
+
+
+--
 
 open Suma
 #check TSumaComm
