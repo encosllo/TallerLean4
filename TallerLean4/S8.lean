@@ -127,63 +127,88 @@ theorem LOrd6 (n k : N) : (it Dprec k n z) → n = z := by
 --
 
 -- Lema 7
-theorem LOrd7 (n m k : N) : it Dprec k n m ↔ it Dprec k (s n) (s m) := by
-  apply Iff.intro
-  intro h
+theorem LOrd7 (n k : N) : (it Dprec k n n) := by
   induction k
-  exact congrArg s h
+  exact rfl
+  rename_i k hInd
+  exact Or.inl hInd
+
+-- Lema8
+theorem LOrd8 (n k : N) : ∀ (m:N), it Dprec k (s n) m → it Dprec (s k) n m := by
+  induction k
+  -- Cas base
+  intro m
+  intro h
+  apply Or.inr
+  use n
+  apply And.intro
+  exact rfl
+  exact h.symm
+  -- Pas inductiu
+  intro m
+  intro h
   rename_i k hInd
   cases h
   rename_i hinl
-  exact Or.inl (hInd hinl)
+  exact Or.inl ((hInd m) hinl)
   rename_i hinr
   apply Exists.elim hinr
   intro p
-  intro ⟨h2, h3⟩
+  intro ⟨h1, h2⟩
+  apply Or.inr
+  use p
+  apply And.intro
+  exact (hInd p) h1
+  exact h2
+
+-- Lema 9
+theorem LOrd9 (n k: N) : ∀(m:N), it Dprec k n m ↔ it Dprec k (s n) (s m) := by
+  induction k
+  intro m
+  apply Iff.intro
+  --
+  intro h1
+  exact congrArg s h1
+  intro h1
+  injection h1
+  --
+  rename_i k hInd
+  intro m
+  apply Iff.intro
+  intro h1
+  cases h1
+  rename_i h1inl
+  apply Or.inl
+  specialize hInd m
+  exact hInd.mp (h1inl)
+  rename_i h1inr
+  apply Exists.elim h1inr
+  intro p
+  intro ⟨h2,h3⟩
   apply Or.inr
   use (s p)
   apply And.intro
-  sorry
+  specialize hInd p
+  exact hInd.mp h2
   exact congrArg s h3
-  --
-  intro h
-  induction k
-  injection h
-  rename_i k hInd
-  cases h
-  rename_i hinl
+  intro h1
+  cases h1
+  rename_i h1inl
+  specialize hInd m
   apply Or.inl
-  exact hInd hinl
-  rename_i hinr
-  apply Exists.elim hinr
+  exact hInd.mpr h1inl
+  rename_i h1inr
+  apply Exists.elim h1inr
   intro p
   intro ⟨h2,h3⟩
   rw [Dprec] at h3
   injection h3 with h3
-  rw [h3] at hInd
-  rw [h3]
-  sorry
+  rw [h3.symm] at h2
+  exact LOrd8 n k m h2
+--
 
--- Lema 8
-theorem LOrd8 (n m k : N) (h1 : it Dprec k (s n) (s m)) : it Dprec k n m := by
-  induction k
-  injection h1
-  rename_i k hInd
-  cases h1
-  rename_i h1
-  have h2 : it Dprec k n m := by exact hInd h1
-  exact Or.inl h2
-  rename_i h1
-  apply Exists.elim h1
-  intro p
-  intro ⟨h3,h4⟩
-  rw [Dprec] at h4
-  injection h4 with h4
-  rw [h4.symm] at h3
-  sorry
-
--- Lema 9
-theorem LOrd9 (n k : N) : ¬(it Dprec k (s n) n) := by
+-- Lema 10
+theorem LOrd10 (n k : N) : ¬(it Dprec k (s n) n) := by
   by_contra h1
   induction n
   induction k
@@ -192,19 +217,19 @@ theorem LOrd9 (n k : N) : ¬(it Dprec k (s n) n) := by
   have h2 : s z = z := by exact LOrd6 (s z) (s n) h1
   injection h2
   rename_i n hInd
-  have h2: it Dprec k (s n) n := by exact LOrd8 (s n) n k h1
+  have h2: it Dprec k (s n) n := by
+    exact (LOrd9 (s n) k n).mpr h1
   exact hInd h2
 
-open Suma
-#check TSumaComm
-
--- Lema 10
-theorem LOrd10 (n m k : N) : (it Dprec k n m) → (it Dprec k m n) → n = m := by
-  intro h1 h2
-  -- Per inducció sobre k
+-- Lema 11
+theorem LOrd11 (n m k : N) : (it Dprec k n m) → (it Dprec k m n) → n = m := by
   induction k
+  -- Cas base
+  intro h1 h2
   exact h1
+  -- Pas inductiu
   rename_i k hInd
+  intro h1 h2
   cases h1
   rename_i h1inl
   cases h2
@@ -213,13 +238,14 @@ theorem LOrd10 (n m k : N) : (it Dprec k n m) → (it Dprec k m n) → n = m := 
   rename_i h2inr
   apply Exists.elim h2inr
   intro p
-  intro ⟨h3, h4⟩
-  rw [Dprec] at h4
-  rw [h4] at h1inl
+  intro ⟨h2,h3⟩
   sorry
 
--- Lema 11
-theorem LOrd11 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
+open Suma
+#check TSumaComm
+
+-- Lema 12
+theorem LOrd12 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
   intro h1 h2
   apply Exists.elim h1
   intro k h3
@@ -234,14 +260,14 @@ theorem LOrd11 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
   have h7 : k + l = l + k := by
     apply TSumaComm
   rw [h7] at h5
-  exact LOrd10 n m (l + k) h5 h6
+  exact LOrd11 (l + k) n m h5 h6
 
 -- La relació ≤ és antisimètrica
 theorem DleqAnti : antisimetrica Dleq := by
   rw [antisimetrica]
   intro n m
   intro ⟨h1, h2⟩
-  exact LOrd11 n m h1 h2
+  exact LOrd12 n m h1 h2
 
 -- La relació ≤ és transitiva
 theorem DleqTrans : transitiva Dleq := by
@@ -252,10 +278,10 @@ theorem DleqRfl : reflexiva Dleq := by
   exact TCrtRfl Dprec
 
 -- La relació ≤ és un ordre
-theorem DleqOrd : ordre Dleq := by 
-  rw [ordre] 
-  apply And.intro 
+theorem DleqOrd : ordre Dleq := by
+  rw [ordre]
+  apply And.intro
   exact DleqRfl
-  apply And.intro 
+  apply And.intro
   exact DleqAnti
   exact DleqTrans
