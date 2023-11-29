@@ -308,11 +308,39 @@ theorem LOrd12 (k : N) : ∀(m:N), it Dprec k (s (m + k)) m → False := by
   exact hInd m h4l
   --
   rename_i h4r
-  sorry
+  have h5 : s (m + s k + k) = m + s (k + s k) := by
+    have h6 : m + s k + k = m + (s k + k) := by exact TSumaAss m (s k) k
+    rw [h6]
+    have h7 : s (m + (s k + k)) = (s m) + (s k + k) := by exact rfl
+    rw [h7]
+    have h8 : (s m) + (s k + k) = m + (s (s k + k)) := by
+      apply TSumUn
+    rw [h8]
+    apply TCongd
+    apply congrArg s
+    exact TSumUn k k
+  rw [h5] at h4r
+  exact TIncSuc m (k + s k) h4r
   --
   rename_i h2r
-  sorry
-
+  have h5 : s (s (m + s k) + k) = m + s (s (s k) + k) := by
+    have h6 : m + s (s (s k) + k) = (s m) + (s (s k) + k) := by
+      exact (TSumUn m (s (s k) + k)).symm
+    rw [h6]
+    have h7 : s m + (s (s k) + k) = s (m + ((s (s k) + k))) := by exact rfl
+    rw [h7]
+    apply congrArg s
+    have h8 : m + (s (s k) + k) = (m + s (s k)) + k := by
+      exact (TSumaAss m (s (s k)) k).symm
+    rw [h8]
+    apply TConge
+    have h9 : s (m + s k) = (s m) + s k := by exact rfl
+    rw [h9]
+    have h10 : m + s (s k) = (s m) + (s k) := by
+      exact (TSumUn m (s k)).symm
+    rw [h10]
+  rw [h5] at h2r
+  exact TIncSuc m (s (s k) + k) h2r
 
 -- Lema 13
 theorem LOrd13  (k : N) : ∀(n m : N), it Dprec k n m → n = s (m + k) → False := by

@@ -313,7 +313,7 @@ theorem TIncSuc (n k : N) : n = n + (s k) → False := by
   have h2 : z = s k := by exact h1
   injection h2
   rename_i n hInd
-  have h2 : s n + s k = s (n + s k) :=by exact rfl
+  have h2 : s n + s k = s (n + s k) := by exact rfl
   rw [h2] at h1
   injection h1 with h1
   exact hInd h1
@@ -327,6 +327,35 @@ theorem TIncSuma (n m k : N) : m = n + (s k) →  n = m + (s k) → False := by
   rw [h5] at h1
   rw [h4] at h1
   exact TIncSuc m (k + s k) h1
+
+-- Congruència a dreta
+theorem TCongd (n m k : N) : m = k → n + m = n + k := by
+  intro h1
+  exact congrArg (suma n) h1
+
+-- Congruència a esquerra
+theorem TConge (n m k : N) : m = k →  m + n = k + n := by
+  intro h1
+  exact congrFun (congrArg suma h1) n
+
+-- Simplificable a dreta
+theorem TSimpd (n m k : N) : n + m = n + k → m = k := by
+  intro h1
+  induction n
+  -- Cas base
+  exact h1
+  -- Pas inductiu
+  rename_i n hInd
+  injection h1 with h1
+  exact hInd h1
+
+-- Simplificable a esquerra
+theorem TSimpe (n m k : N) : m + n = k + n → m = k := by
+  intro h1
+  have h2 : m + n = n + m := by exact TSumaComm m n
+  have h3 : k + n = n + k := by exact TSumaComm k n
+  rw [h2,h3] at h1
+  exact TSimpd n m k h1
 
 end Suma
 
