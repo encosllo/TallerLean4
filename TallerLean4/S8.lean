@@ -281,11 +281,48 @@ theorem LOrd11 (n k : N) : ∀(m:N), it Dprec (s k) n m → (it Dprec k n m) ∨
 --
 
 -- Lema 12
-theorem LOrd12  (k : N) : ∀(n m : N), it Dprec k n m → n = s (m + k) → False := by
+theorem LOrd12 (k : N) : ∀(m:N), it Dprec k (s (m + k)) m → False := by
+  induction k
+  -- Cas base
+  intro m h1
+  have h2 : m + z = m := by exact TSuma0ND m
+  rw [h2] at h1
+  have h3 : ¬ it Dprec z (s m) m := by exact LOrd10 m z
+  exact h3 h1
+  -- Pas inductiu
+  rename_i k hInd
+  intro m h1
+  have h2 : (it Dprec k (s (m + s k)) m) ∨ m = s ((s (m + s k)) + k) := by exact LOrd11 (s (m + s k)) k m h1
+  cases h2
+  --
+  rename_i h2l
+  have h3 : it Dprec (s k) (m + s k) m := by exact LOrd8 (m + s k) k m h2l
+  have h4 : (it Dprec k (m + s k) m) ∨ m = s ((m + s k) + k) := by exact LOrd11 (m + s k) k m h3
+  cases h4
+  rename_i h4l
+  have h5 : m + s k = s (m + k) := by
+    calc
+      m + s k = s m + k := by exact (TSumUn m k).symm
+      _ = s (m +k) := by exact rfl
+  rw [h5] at h4l
+  exact hInd m h4l
+  --
+  rename_i h4r
+  sorry
+  --
+  rename_i h2r
   sorry
 
+
 -- Lema 13
-theorem LOrd13 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → n = m := by
+theorem LOrd13  (k : N) : ∀(n m : N), it Dprec k n m → n = s (m + k) → False := by
+  intro n m
+  intro h1 h2
+  rw [h2] at h1
+  exact LOrd12 k m h1
+
+-- Lema 14
+theorem LOrd14 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → n = m := by
   induction k
   -- Cas base
   intro n m
@@ -307,7 +344,7 @@ theorem LOrd13 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → 
   -- Cas 4 right
   rename_i h4r
   apply False.elim
-  apply LOrd12
+  apply LOrd13
   exact h3l
   exact h4r
   -- Cas 3 right
@@ -316,7 +353,7 @@ theorem LOrd13 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → 
   -- Cas 4 left
   rename_i h4l
   apply False.elim
-  apply LOrd12
+  apply LOrd13
   exact h4l
   exact h3r
   -- Cas 4 right
@@ -333,8 +370,8 @@ theorem LOrd13 (k : N) : ∀(n m: N), (it Dprec k n m) → (it Dprec k m n) → 
     _ = m + s k := by exact TSumUn m k
 --
 
--- Lema 14
-theorem LOrd14 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
+-- Lema 15
+theorem LOrd15 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
   intro h1 h2
   apply Exists.elim h1
   intro k h3
@@ -349,14 +386,14 @@ theorem LOrd14 (n m : N) : (n ≤ m) → (m ≤ n) → n = m := by
   have h7 : k + l = l + k := by
     apply TSumaComm
   rw [h7] at h5
-  exact LOrd13 (l + k) n m h5 h6
+  exact LOrd14 (l + k) n m h5 h6
 
 -- La relació ≤ és antisimètrica
 theorem DleqAnti : antisimetrica Dleq := by
   rw [antisimetrica]
   intro n m
   intro ⟨h1, h2⟩
-  exact LOrd14 n m h1 h2
+  exact LOrd15 n m h1 h2
 
 -- La relació ≤ és transitiva
 theorem DleqTrans : transitiva Dleq := by
