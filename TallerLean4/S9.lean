@@ -2,10 +2,12 @@
 -- Definim structures i classes
 
 import TallerLean4.S8
+import TallerLean4.S6
 
 -- En aquesta sessió anem a implementar classes i estructures
 -- Seguirem https://lean-lang.org/theorem_proving_in_lean4/type_classes.html
 
+namespace bin
 -- Definim una estructura que dependrà d'un tipus α
 -- i contindrà tipus amb operacions binàries
 structure Bin (α : Type) where
@@ -74,11 +76,11 @@ instance CSum : Opbin N where
   #check CSum
   #check CSum.bin
 
+end bin
 
-namespace semigrups
-
--- Definim la classes dels monoides
-class monoide where
+namespace monoide
+-- Definim l'estructura dels monoides
+structure monoide where
   univ : Type
   mult : univ → univ → univ
   e : univ
@@ -87,42 +89,99 @@ class monoide where
   neue : ∀(x : univ), mult e x = x
 
 open monoide
-notation : 65 lhs:65 " * " rhs:66 => mult lhs rhs
+-- notation : 65 lhs:65 " * " rhs:66 => mult lhs rhs
 
 -- En un monoide l'element neutre és l'únic que és neutre a dreta
-theorem TUniNeutred [S : monoide] (z : univ) :  (∀(w : univ), (z*w = w)) → z = e := by
+theorem TUniNeutred (S : monoide) (z : S.univ) :  (∀(w : S.univ), (S.mult z w = w)) → z = S.e := by
   intro h
-  specialize h e
+  specialize h S.e
   calc
-   z = z * e := by exact (neud z).symm
-   _ = e := by exact h
+   z = S.mult z S.e := by exact (S.neud z).symm
+   _ = S.e := by exact h
 
 -- En un monoide l'element neutre és l'únic que és neutre a esquerra
-theorem TUniNeutree [S : monoide] (z : univ) : (∀(w : univ), (w*z= w)) → z = e := by
+theorem TUniNeutree (S : monoide) (z : S.univ) : (∀(w : S.univ), (S.mult w z = w)) → z = S.e := by
   intro h
-  specialize h e
+  specialize h S.e
   calc
-   z = e * z := by exact (neue z).symm
-   _ = e := by exact h
+   z = S.mult S.e z := by exact (S.neue z).symm
+   _ = S.e := by exact h
 
--- Definim els homomorfismes de monoides
-class monhom where
-  dom : monoide
-  cod : monoide
-  f : dom.univ → cod.univ
-  cmult : ∀(x y : dom.univ), f (dom.mult x y) = cod.mult (f x) (f y)
-  cneu : f (dom.e) = cod.e
+-- En un monoide l'element neutre és idempotent
+theorem TUniId (S : monoide) : S.mult S.e S.e = S.e := by
+  exact neue S S.e
 
+open N
+open Suma
 
 -- N té estructura de monoide
 instance sN : monoide where
   univ := N
-  mult := Suma.suma
+  mult := suma
   e := z
-  ass := Suma.TSumaAss
-  neud := Suma.TSuma0ND
-  neue := Suma.TSuma0NE
+  ass := TSumaAss
+  neud := TSuma0ND
+  neue := TSuma0NE
+--
 
+-- Definim els homomorfismes de monoides
+structure monhom (S T : monoide) where
+  f : S.univ → T.univ
+  cmult : ∀(x y : S.univ), f (S.mult x y) = T.mult (f x) (f y)
+  cneu : f (S.e) = T.e
+
+-- Inclusió de generadors
+def η : N → sN.univ := by
+  intro n
+  exact n
+----
+
+def puniv (S : monoide) (s : S.univ) : monhom sN S where
+  f := by
+    intro n
+    induction n
+    -- Cas base
+    exact S.e
+    -- Pas inductiu
+    rename_i n hInd
+    exact S.mult s hInd
+  cmult := by
+    intro n m
+    induction n
+    induction m
+    simp at *
+    have h1 : mult sN z z = z := by exact rfl
+    rw [h1]
+    have h2 : mult S S.e S.e = S.e := by exact TUniId S
+    rw [h2]
+    --
+    rename_i m hInd
+    simp at *
+    have h1 : mult sN z (N.s m) = N.s m := by exact rfl
+    rw [h1]
+    have h2 : mult S S.e (mult S s (N.rec S.e (fun a a_ih => mult S s a_ih) m)) = (mult S s (N.rec S.e (fun a a_ih => mult S s a_ih) m)) := by
+      exact neue S (mult S s (N.rec S.e (fun a a_ih => mult S s a_ih) m))
+    rw [h2]
+    --
+    rename_i n hInd
+    induction m
+    have h3 : mult sN (N.s n) z = N.s n := by
+      exact TSuma0ND (N.s n)
+    have h4 : mult sN n z = n := by
+      exact TSuma0ND n
+    rw [h3, h4] at *
+    simp at *
+    rw [neud S] at *
+    --
+    rename_i m hIndm
+    simp at *
+    rw [ass S] at *
+    have h3 : mult sN n (N.s m) = mult sN (N.s n) m := by
+      exact (TSumUn n m).symm
+    rw [h3] at hInd
+    sorry
+  cneu := by
+    exact rfl
 --
 
 
@@ -131,4 +190,4 @@ instance sN : monoide where
 
 
 
-end semigrups
+end monoide
