@@ -88,6 +88,10 @@ structure monoide where
   neud : ∀(x : univ), op x e = x
   neue : ∀(x : univ), op e x = x
 
+-- Així, monoide passa a ser un tipus d'ordre superior
+#check monoide
+#check monoide.univ
+
 open monoide
 -- notation : 65 lhs:65 " * " rhs:66 => op lhs rhs
 
@@ -196,8 +200,79 @@ def puniv (S : monoide) (s : S.univ) : monhom sNat S where
     exact rfl
 --
 
+-- (Prop, ∧ , True) és un monoide
+instance PAnd : monoide where
+  univ := Prop
+  op := by
+    intro P Q
+    exact P ∧ Q
+  e := True
+  ass := by
+    intro P Q R
+    apply propext
+    --
+    apply Iff.intro
+    -- Implicació 1
+    intro ⟨h1, h2⟩
+    exact And.intro h1.left (And.intro h1.right h2)
+    -- Implicació 2
+    intro ⟨h1, h2⟩
+    exact And.intro (And.intro h1 h2.left) h2.right
+  neue := by
+    intro P
+    apply propext
+    --
+    apply Iff.intro
+    -- Implicació 1
+    intro ⟨h1, h2⟩
+    exact h2
+    -- Implicació 2
+    intro h
+    exact And.intro trivial h
+  neud := by
+    intro P
+    apply propext
+    --
+    apply Iff.intro
+    -- Implicació 1
+    intro ⟨h1, h2⟩
+    exact h1
+    -- Implicació 2
+    intro h
+    exact And.intro h trivial
+
+--
+#check PAnd
+
+-- (Prop, ∨ , False) és un monoide
+instance POr : monoide where
+  sorry
 
 
+-- Definim monoides abelians
+structure monoideAb extends monoide where
+  ab : ∀ (x y), op x y = op y x
+
+-- L'extensió sempre va acompanyada d'un retorn a l'estructrura original
+#check monoideAb.tomonoide
+
+instance sNAb : monoideAb where
+  univ := N
+  op := suma
+  e := z
+  ass := TSumaAss
+  neud := TSuma0ND
+  neue := TSuma0NE
+  ab := TSumaComm
+
+theorem T : sNAb.tomonoide = sN := by
+  exact rfl
+
+
+--
+inductive FMon (X : Type) where
+  | e 
+  | op : FMon X → FMon X → FMon X
 
 
 
