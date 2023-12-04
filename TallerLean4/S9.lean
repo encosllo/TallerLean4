@@ -82,33 +82,33 @@ namespace monoide
 -- Definim l'estructura dels monoides
 structure monoide where
   univ : Type
-  mult : univ → univ → univ
+  op : univ → univ → univ
   e : univ
-  ass : ∀ (x y z : univ), mult (mult x y) z = mult x (mult y z)
-  neud : ∀(x : univ), mult x e = x
-  neue : ∀(x : univ), mult e x = x
+  ass : ∀ (x y z : univ), op (op x y) z = op x (op y z)
+  neud : ∀(x : univ), op x e = x
+  neue : ∀(x : univ), op e x = x
 
 open monoide
--- notation : 65 lhs:65 " * " rhs:66 => mult lhs rhs
+-- notation : 65 lhs:65 " * " rhs:66 => op lhs rhs
 
 -- En un monoide l'element neutre és l'únic que és neutre a dreta
-theorem TUniNeutred (S : monoide) (z : S.univ) :  (∀(w : S.univ), (S.mult z w = w)) → z = S.e := by
+theorem TUniNeutred (S : monoide) (z : S.univ) :  (∀(w : S.univ), (S.op z w = w)) → z = S.e := by
   intro h
   specialize h S.e
   calc
-   z = S.mult z S.e := by exact (S.neud z).symm
+   z = S.op z S.e := by exact (S.neud z).symm
    _ = S.e := by exact h
 
 -- En un monoide l'element neutre és l'únic que és neutre a esquerra
-theorem TUniNeutree (S : monoide) (z : S.univ) : (∀(w : S.univ), (S.mult w z = w)) → z = S.e := by
+theorem TUniNeutree (S : monoide) (z : S.univ) : (∀(w : S.univ), (S.op w z = w)) → z = S.e := by
   intro h
   specialize h S.e
   calc
-   z = S.mult S.e z := by exact (S.neue z).symm
+   z = S.op S.e z := by exact (S.neue z).symm
    _ = S.e := by exact h
 
 -- En un monoide l'element neutre és idempotent
-theorem TUniId (S : monoide) : S.mult S.e S.e = S.e := by
+theorem TUniId (S : monoide) : S.op S.e S.e = S.e := by
   exact neue S S.e
 
 open N
@@ -117,17 +117,35 @@ open Suma
 -- N té estructura de monoide
 instance sN : monoide where
   univ := N
-  mult := suma
+  op := suma
   e := z
   ass := TSumaAss
   neud := TSuma0ND
   neue := TSuma0NE
 --
 
+-- ℕ té estructura de monoide
+instance sNat : monoide where
+  univ := ℕ
+  op := by
+    intro n m
+    exact n + m
+  e := 0
+  ass := by
+    intro n m p
+    exact Nat.add_assoc n m p
+  neud := by
+    intro n
+    exact rfl
+  neue := by
+    intro n
+    exact Nat.zero_add n
+--
+
 -- Definim els homomorfismes de monoides
 structure monhom (S T : monoide) where
   f : S.univ → T.univ
-  cmult : ∀(x y : S.univ), f (S.mult x y) = T.mult (f x) (f y)
+  cop : ∀(x y : S.univ), f (S.op x y) = T.op (f x) (f y)
   cneu : f (S.e) = T.e
 
 -- Inclusió de generadors
@@ -136,49 +154,43 @@ def η : N → sN.univ := by
   exact n
 ----
 
-def puniv (S : monoide) (s : S.univ) : monhom sN S where
-  f := by
+def punivf (S : monoide) (s : S.univ) : sNat.univ → S.univ := by
+  intro n
+  induction n
+  exact S.e
+  rename_i n hInd
+  exact S.op s hInd
+
+#check Nat.sum
+
+def puniv (S : monoide) (s : S.univ) : monhom sNat S where
+  f := punivf S s
+  cop := by
     intro n
     induction n
-    -- Cas base
-    exact S.e
-    -- Pas inductiu
-    rename_i n hInd
-    exact S.mult s hInd
-  cmult := by
-    intro n m
-    induction n
-    induction m
-    simp at *
-    have h1 : mult sN z z = z := by exact rfl
+    intro m
+    have h1 : op sNat Nat.zero m = m := by
+      induction m
+      exact rfl
+      rename_i m hIndm
+      have h2 : op sNat Nat.zero (Nat.succ m) = Nat.succ (op sNat Nat.zero m) := by exact rfl
+      rw [h2]
+      exact congrArg Nat.succ hIndm
     rw [h1]
-    have h2 : mult S S.e S.e = S.e := by exact TUniId S
+    have h2 : punivf S s Nat.zero = S.e := by exact rfl
     rw [h2]
-    --
-    rename_i m hInd
-    simp at *
-    have h1 : mult sN z (N.s m) = N.s m := by exact rfl
-    rw [h1]
-    have h2 : mult S S.e (mult S s (N.rec S.e (fun a a_ih => mult S s a_ih) m)) = (mult S s (N.rec S.e (fun a a_ih => mult S s a_ih) m)) := by
-      exact neue S (mult S s (N.rec S.e (fun a a_ih => mult S s a_ih) m))
-    rw [h2]
-    --
+    rw [S.neue]
     rename_i n hInd
-    induction m
-    have h3 : mult sN (N.s n) z = N.s n := by
-      exact TSuma0ND (N.s n)
-    have h4 : mult sN n z = n := by
-      exact TSuma0ND n
-    rw [h3, h4] at *
-    simp at *
-    rw [neud S] at *
-    --
-    rename_i m hIndm
-    simp at *
-    rw [ass S] at *
-    have h3 : mult sN n (N.s m) = mult sN (N.s n) m := by
-      exact (TSumUn n m).symm
-    rw [h3] at hInd
+    intro m
+    have h1 : op sNat (Nat.succ n) m = op sNat n (Nat.succ m) := by
+      sorry
+    rw [h1]
+    rw [hInd (Nat.succ m)]
+    have h2 : punivf S s (Nat.succ n) = S.op s (punivf S s n) := by exact rfl
+    rw [h2]
+    have h3 : punivf S s (Nat.succ m) = S.op s (punivf S s m) := by exact rfl
+    rw [h3]
+    rw [S.ass] at *
     sorry
   cneu := by
     exact rfl
